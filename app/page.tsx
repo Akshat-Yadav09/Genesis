@@ -33,7 +33,6 @@ export default function Home() {
   const [coltRecoil, setColtRecoil] = useState(false);
   const [leonActive, setLeonActive] = useState(false);
   const [telescopeGlint, setTelescopeGlint] = useState(false);
-  const [balloonBounced, setBalloonBounced] = useState(false);
 
   // 3D Interactive Tilt & Container Refs (Zero React Re-render on Mouse Move!)
   const containerRef = useRef<HTMLDivElement>(null);
@@ -258,12 +257,6 @@ export default function Home() {
     sounds.playClick();
     setTelescopeGlint(true);
     setTimeout(() => setTelescopeGlint(false), 320);
-  };
-
-  const handleBalloonClick = () => {
-    sounds.playPop();
-    setBalloonBounced(true);
-    setTimeout(() => setBalloonBounced(false), 240);
   };
 
   return (
@@ -905,7 +898,7 @@ export default function Home() {
 
         {/* ── PROPS SITTING FIRMLY ON THE OBSERVATORY STAGE FLOOR ── */}
 
-        {/* 1. Left Telescope Turret (Grounded on the Deck & Console, Exactly as in Figma) */}
+        {/* Left Telescope Turret (Grounded on the Deck & Console, Exactly as in Figma) */}
         <div 
           onClick={handleTelescopeClick}
           className="hero-telescope absolute z-25 transition-transform duration-300 hover:scale-105 group gpu-accel cursor-pointer"
@@ -931,32 +924,6 @@ export default function Home() {
                 style={{ boxShadow: "0 0 16px 6px rgba(251, 191, 36, 0.95)" }}
               />
             )}
-          </div>
-        </div>
-
-        {/* 2. Right Squeak Balloon Character (Grounded on the Deck, Floating Bobble & Pop Sound) */}
-        <div 
-          onClick={handleBalloonClick}
-          className={`hero-balloon absolute z-25 transition-transform duration-300 hover:scale-105 group gpu-accel cursor-pointer ${
-            balloonBounced ? "-translate-y-2 scale-106" : ""
-          }`}
-          style={{
-            bottom: "1.5%",
-            right: "1.5%",
-            width: "clamp(260px, 25vw, 370px)",
-            height: "auto",
-            animation: !balloonBounced ? "balloon-bob 4s ease-in-out infinite" : undefined,
-          }}
-          title="Fine, you have my full attention. - Click to Bounce!"
-        >
-          <div className="relative">
-            <Image
-              src="/landing-pages/home/ui/group-1000012450.webp"
-              alt="Fine, you have my full attention."
-              width={370}
-              height={245}
-              className="w-full h-auto object-contain drop-shadow-[0_8px_18px_rgba(0,0,0,0.65)]"
-            />
           </div>
         </div>
 

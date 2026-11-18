@@ -98,11 +98,10 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
 
       markers.forEach((marker, index) => {
         const reached = progress >= thresholds[index] - 0.002;
-        const opened = progress >= thresholds[index] + 0.002;
 
         marker.classList.toggle("is-reached", reached);
         marker.classList.toggle("is-current", index === currentStage);
-        stageElements[index].classList.toggle("is-flipped", opened);
+        stageElements[index].classList.toggle("is-revealed", activationY >= markerCenters[index]);
       });
     };
 
@@ -157,20 +156,21 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
   }, [scrollContainerRef]);
 
   return (
-    <section ref={sectionRef} id="timeline" className="genesis-timeline relative w-full overflow-hidden bg-[#030015] text-white" aria-label="Genesis Event Timeline Roadmap">
+    <section ref={sectionRef} id="timeline" className="genesis-timeline relative w-full overflow-hidden bg-[#030015] text-white" aria-labelledby="timeline-heading">
       <div className="absolute inset-0 pointer-events-none">
         <img loading="lazy" decoding="async" src="/landing-pages/shared/backgrounds/cosmic-background.webp" alt="" aria-hidden="true" className="h-full w-full object-cover opacity-75" />
         <div className="absolute inset-0 bg-[#030015]/35" />
       </div>
 
-      <header className="relative z-10 flex justify-center px-4 pt-20 sm:pt-24">
+      <header className="relative z-10 flex justify-center px-4">
+        <h2 id="timeline-heading" className="sr-only">Timeline</h2>
         <div className="relative flex items-center justify-center">
-          <img loading="lazy" decoding="async" src="/landing-pages/timeline/backgrounds/heading-banner.svg" alt="Tournament Timeline" className="h-12 w-auto sm:h-14 md:h-16" />
-          <img loading="lazy" decoding="async" src="/landing-pages/timeline/ui/heading-text.svg" alt="TIMELINE" className="absolute h-6 w-auto sm:h-7 md:h-8" />
+          <img loading="lazy" decoding="async" src="/landing-pages/timeline/backgrounds/heading-banner.svg" alt="" className="h-12 w-auto sm:h-14 md:h-16" />
+          <img loading="lazy" decoding="async" src="/landing-pages/timeline/ui/heading-text.svg" alt="" className="absolute h-6 w-auto translate-y-[4px] sm:h-7 md:h-8" />
         </div>
       </header>
 
-      <div ref={journeyRef} className="genesis-timeline-journey relative z-10 mx-auto mt-8 w-full max-w-6xl px-4 pb-20 sm:px-8 sm:pb-28">
+      <div ref={journeyRef} className="genesis-timeline-journey relative z-10 mx-auto w-full max-w-6xl px-4 pb-20 sm:px-8 sm:pb-28">
         <div ref={trackRef} className="genesis-timeline-track" data-runtime="golden-journey-v1" aria-hidden="true">
           <div className="genesis-timeline-progress-fill" />
           <div className="genesis-timeline-traveling-light" />
@@ -180,18 +180,18 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
             <article key={stage.step} className={`genesis-timeline-stage genesis-timeline-stage-${stage.side}`}>
               <div className="genesis-timeline-card">
                 <div className="genesis-timeline-card-inner">
-                <div className="genesis-timeline-card-back">
-                  <span className="genesis-timeline-card-step">STAGE {stage.step}</span>
-                  <h3>{stage.title}</h3>
-                  <p className="genesis-timeline-card-subtitle">{stage.sub}</p>
-                  <div className="genesis-timeline-card-details">
-                    {stage.details.map((detail) => <p key={detail}>{detail}</p>)}
+                  <div className="genesis-timeline-card-back">
+                    <span className="genesis-timeline-card-step">STAGE {stage.step}</span>
+                    <h3>{stage.title}</h3>
+                    <p className="genesis-timeline-card-subtitle">{stage.sub}</p>
+                    <div className="genesis-timeline-card-details">
+                      {stage.details.map((detail) => <p key={detail}>{detail}</p>)}
+                    </div>
+                  </div>
+                  <div className="genesis-timeline-card-front">
+                    <img loading="lazy" decoding="async" src={stage.asset} alt="" draggable={false} />
                   </div>
                 </div>
-                <div className="genesis-timeline-card-front">
-                <img loading="lazy" decoding="async" src={stage.asset} alt={`${stage.title} — ${stage.sub}`} draggable={false} />
-                </div>
-              </div>
               </div>
               <div className="genesis-timeline-marker">
                 <img loading="lazy" decoding="async"
