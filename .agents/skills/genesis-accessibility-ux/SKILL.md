@@ -6,7 +6,7 @@ description: Audit and improve GenesisWebsite2026 keyboard navigation, screen-re
 # Genesis Accessibility and UX
 
 ## Workflow
-1. Read `ARCHITECTURE.md`, `ANIMATION_SYSTEM.md`, `QUALITY_GATES.md` and inspect the relevant section source.
+1. Read `docs/project/ARCHITECTURE.md`, `docs/project/ANIMATION_SYSTEM.md`, `docs/project/QUALITY_GATES.md` and inspect the relevant section source.
 2. Identify the actual interaction contract (element type, state, keyboard actions and focus destination).
 3. Test by keyboard: skip links, menu open/close, FAQ, contact/social links, CTA and brochure.
 4. Confirm heading order, alt text, labels, `aria-expanded` where relevant, clear focus-visible and contrast.

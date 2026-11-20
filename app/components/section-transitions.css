@@ -27,27 +27,21 @@
   main>section#about {
     z-index: 1;
   }
-
   main>section#timeline {
     z-index: 2;
   }
-
   main>section#prizepool {
     z-index: 3;
   }
-
   main>section#memories {
     z-index: 4;
   }
-
   main>section#sponsors {
     z-index: 5;
   }
-
   main>section#faq {
     z-index: 10;
   }
-
   main>section#contact {
     position: relative;
     z-index: 20;

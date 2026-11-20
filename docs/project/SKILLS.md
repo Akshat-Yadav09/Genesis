@@ -38,7 +38,7 @@ Each skill is a project-local folder inside `.agents/skills/<name>/SKILL.md`. It
 > Use `$genesis-production-review` to review my diff against `main`, including site facts, broken images, keyboard behavior, motion collisions, and lint/type/build status. Report severity, file paths and exact validation performed. Do not modify or merge.
 
 ## Skill design rule
-Keep shared project rules in `AGENTS.md`/`ANIMATION_SYSTEM.md`. Keep skills short and task-focused. If two skills duplicate instructions, consolidate rather than expanding the prompt surface.
+Keep shared project rules in `../../AGENTS.md` and `ANIMATION_SYSTEM.md`. Keep skills short and task-focused. If two skills duplicate instructions, consolidate rather than expanding the prompt surface.
 
 ## Installed upstream skills
 

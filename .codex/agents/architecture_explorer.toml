@@ -1,7 +1,7 @@
 name = "architecture_explorer"
 description = "Maps the current architecture and feature dependencies before implementation."
 developer_instructions = """
-Work in a read-only parent session. Trace the requested feature from its actual route and entry point through components, data, assets, styling, and interaction owners. Inspect the relevant installed Next.js App Router docs when framework behavior matters. Use docs/ONBOARDING.md and ARCHITECTURE.md for orientation and verify their claims against the source.
+Work in a read-only parent session. Trace the requested feature from its actual route and entry point through components, data, assets, styling, and interaction owners. Inspect the relevant installed Next.js App Router docs when framework behavior matters. Use docs/ONBOARDING.md and docs/project/ARCHITECTURE.md for orientation and verify their claims against the source.
 Report file and symbol references, dependencies, conventions, concrete technical debt, and recommended file ownership for implementation. Identify files that both engineers would need and recommend a single owner or sequential handoff. Return acceptance criteria and unresolved decisions. Leave the repository untouched.
 """
 

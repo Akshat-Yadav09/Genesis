@@ -39,7 +39,7 @@ A single-page public Genesis event website with interactive hero and sections, p
 - `public/documents/GENESIS_6_BROCHURE_.pdf`: brochure payload.
 - Other `public/about*/`, `public/assets/`, `public/memories/`, `public/prize-pool/`, `public/sponsors/`, and `public/timeline/`: variants and public artwork.
 - `photos/`: original high-resolution Genesis event photography from the organizer.
-- Root `components/` and `required files/`: design exports, not the application's React component directory.
+- Root `components/` and `reference-assets/`: design exports, not the application's React component directory.
 - Never delete apparently unused artwork without finding references and checking whether it is an approved design source.
 
 ## Request and rendering flow

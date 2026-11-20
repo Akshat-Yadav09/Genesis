@@ -9,7 +9,7 @@ description: Add small production-quality CSS animations, hover/focus feedback, 
 Use for buttons, navigation links, badges, glow, decorative floating art and simple entrances. For long scroll choreography use `genesis-gsap-scroll`; for React presence/gesture decisions use `genesis-motion-react`.
 
 ## Workflow
-1. Read `ANIMATION_SYSTEM.md`, existing CSS and the relevant JSX markup.
+1. Read `docs/project/ANIMATION_SYSTEM.md`, existing CSS and the relevant JSX markup.
 2. Identify the animation's purpose, target property and accessible equivalent.
 3. Check whether GSAP already changes the same transform/opacity. If so, do not animate that same property on the same element.
 4. Prefer custom properties for shared durations/easing; limit keyframes and large-area paints.

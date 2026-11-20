@@ -9,7 +9,7 @@ description: Implement or refactor Next.js App Router and React/TypeScript front
 New homepage sections, component refactors, mobile navigation, shared frontend primitives, client/server component boundaries and performance fixes.
 
 ## Workflow
-1. Read `AGENTS.md`, `ARCHITECTURE.md`, and the owning components. Consult installed Next.js docs as required by repository AGENTS instructions.
+1. Read `AGENTS.md`, `docs/project/ARCHITECTURE.md`, and the owning components. Consult installed Next.js docs as required by repository AGENTS instructions.
 2. Locate the single source of truth for copy and event facts. Never invent dates, prizes, links, sponsors or organizer claims.
 3. Plan a small diff. Keep orchestration in `app/page.tsx`, section behavior in `app/components/`, and section styles near their component where appropriate.
 4. Prefer semantic HTML, strict TypeScript, appropriate Server/Client boundaries, image optimization and accessible navigation.

@@ -21,7 +21,7 @@ Active browser assets live under `public/landing-pages/<section>/<category>/`:
 
 The brochure is authoritative at `public/documents/GENESIS_6_BROCHURE_.pdf`.
 
-Reference assets remain in `required files/` and staging exports remain in `components/`; neither is imported by the browser runtime.
+Reference assets remain in `reference-assets/` and staging exports remain in `components/`; neither is imported by the browser runtime.
 
 ## Adding assets
 

@@ -1,4 +1,6 @@
-## GenesisWebsite2026 project conventions (append to existing AGENTS.md)
+## GenesisWebsite2026 project conventions (historical appendix)
+
+These conventions have been merged into the root `AGENTS.md`. Keep this copy as the original project-kit appendix for reference; do not append it a second time.
 
 Before changes, read `ARCHITECTURE.md`, `ANIMATION_SYSTEM.md`, and any relevant section component. For major work, read and update `PLAN.md`; record consequential tradeoffs in `DECISIONS.md`. Keep the existing AGENTS.md directive to consult installed Next.js guides under `node_modules/next/dist/docs/`.
 
@@ -20,4 +22,4 @@ Before changes, read `ARCHITECTURE.md`, `ANIMATION_SYSTEM.md`, and any relevant 
 - In the final summary list changes, validation, residual risks, and any untested behavior.
 
 ### Skills
-Use project-local skills when appropriate: `genesis-ui-engineering`, `genesis-css-animation`, `genesis-gsap-scroll`, `genesis-motion-react`, `genesis-accessibility-ux`, and `genesis-production-review`. Avoid invoking unrelated skills merely because they exist.
+Use project-local skills when appropriate. See `SKILLS.md` for the current catalog.

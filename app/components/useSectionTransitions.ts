@@ -39,7 +39,7 @@ export function useSectionTransitions(
     let resizeObserver: ResizeObserver | null = null;
     let rafId = 0;
     let refreshTimeout = 0;
-    let removeWindowResize = () => { };
+    let removeWindowResize = () => {};
 
     const getSection = (id: string) => document.getElementById(id);
 

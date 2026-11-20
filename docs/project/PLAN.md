@@ -52,7 +52,7 @@ For each significant item, record:
 - **Risk / rollback:** What could break and how will we revert?
 
 ## First proposed sprint
-1. Review existing `AGENTS.md` and apply `AGENTS.ADDITIONS.md` without replacing the current contents.
+1. Review existing `AGENTS.md`; project conventions are already integrated there.
 2. Confirm baseline CI commands and resolve build/lint/type failures.
 3. Audit hero + menu + CTA and Timeline/Memories animation cleanup.
 4. Pick one animation improvement; compare mobile and reduced-motion before and after.
