@@ -1,0 +1,7 @@
+# Custom agents inherit the parent session's sandbox.
+sandbox_mode = "read-only"
+
+[agents]
+enabled = true
+max_concurrent_threads_per_session = 3
+max_depth = 1
