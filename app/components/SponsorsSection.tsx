@@ -152,7 +152,7 @@ export default function SponsorsSection() {
     <section
       ref={sectionRef}
       id="sponsors"
-      className="genesis-sponsors relative w-screen min-h-screen flex flex-col items-center justify-between overflow-x-hidden overflow-y-visible select-none bg-[#030015] py-4 sm:py-6 md:py-8 px-3 sm:px-6 lg:px-8"
+      className="genesis-sponsors relative w-full max-w-full min-h-screen flex flex-col items-center justify-between overflow-x-hidden overflow-y-visible select-none bg-[#030015] py-4 sm:py-6 md:py-8 px-3 sm:px-6 lg:px-8"
       style={{
         background: "radial-gradient(ellipse at 50% 30%, #150a3c 0%, #0c0424 45%, #030014 100%)",
       }}
@@ -181,7 +181,7 @@ export default function SponsorsSection() {
         {/* ── 1. Top SPONSORS Header ──────────────────────── */}
         <header className="relative w-full flex items-center justify-center gap-2 sm:gap-4 md:gap-5 pt-1 pb-3 sm:pb-5 md:pb-6">
           {/* Crown Left with Pop-out Animation */}
-          <div className="relative w-[44px] h-[56px] sm:w-[56px] sm:h-[72px] md:w-[68px] md:h-[86px] flex-shrink-0 animate-icon-pop-crown transition-transform duration-200 hover:scale-110 active:scale-95 cursor-default">
+          <div className="relative w-[32px] h-[42px] sm:w-[56px] sm:h-[72px] md:w-[68px] md:h-[86px] flex-shrink-0 animate-icon-pop-crown transition-transform duration-200 hover:scale-110 active:scale-95 cursor-default">
             <Image
               src="/landing-pages/sponsors/ui/header-crown.svg"
               alt="Genesis Crown"
@@ -193,7 +193,7 @@ export default function SponsorsSection() {
           </div>
 
           {/* SPONSORS Title Center (Steady, No Text Jitter) */}
-          <div className="relative w-[210px] sm:w-[270px] md:w-[327px] aspect-[327/68] flex-shrink-0">
+          <div className="relative w-[170px] sm:w-[270px] md:w-[327px] aspect-[327/68] flex-shrink-0">
             <Image
               src="/landing-pages/sponsors/ui/header-sponsors-title.svg"
               alt="SPONSORS"
@@ -205,7 +205,7 @@ export default function SponsorsSection() {
           </div>
 
           {/* Gems Box Right with Pop-out Animation */}
-          <div className="relative w-[75px] h-[60px] sm:w-[98px] sm:h-[78px] md:w-[124px] md:h-[100px] flex-shrink-0 animate-icon-pop-gems transition-transform duration-200 hover:scale-110 active:scale-95 cursor-default">
+          <div className="relative w-[52px] h-[42px] sm:w-[98px] sm:h-[78px] md:w-[124px] md:h-[100px] flex-shrink-0 animate-icon-pop-gems transition-transform duration-200 hover:scale-110 active:scale-95 cursor-default">
             <Image
               src="/landing-pages/sponsors/ui/header-gems.svg"
               alt="Gems and Credits Box"

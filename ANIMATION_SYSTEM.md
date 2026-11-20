@@ -114,14 +114,16 @@ For React component effects, scope with `gsap.context()` (or an approved `useGSA
 ## Section transitions (`useSectionTransitions.ts` and `section-transitions.css`)
 - Continuous scroll-scrubbed transitions between below-the-fold sections (`#about` through `#contact`).
 - Sticky stack foundation: dynamically sets `position: sticky` and `top: min(0, viewport - height)` so 100vh sections pin at top and tall sections scroll completely before latching.
-- 6 curated seam effects:
-  - About → Timeline: Curtain pull-up (`yPercent: -16`, `scale: 0.96`, `brightness(0.45)`)
-  - Timeline → PrizePool: Depth stack (`scale: 0.9`, `yPercent: -5`, `brightness(0.5)`)
-  - PrizePool → Memories: Curtain pull-up (`yPercent: -16`, `scale: 0.96`, `brightness(0.45)`)
-  - Memories → Sponsors: Slide-in from right (`xPercent: 22 -> 0`, `opacity: 0.2 -> 1`)
-  - Sponsors → FAQ: Zoom & fade reveal (`scale: 0.92 -> 1`, `opacity: 0 -> 1`)
-  - FAQ → Contact: Curtain finale (`yPercent: -14`, `brightness(0.4)`)
-- Card lip elevation: top rounded corners (`clamp(16px, 2.5vw, 28px)`) and lift shadow (`box-shadow: 0 -22px 55px rgba(0, 0, 0, 0.55)`).
+- Single animation controller ownership: `useSectionTransitions` solely coordinates section elevation and depth, preventing transform contention.
+- Curated seam effects with smooth inertial damping (`scrub: 0.6`):
+  - About → Timeline: Subtle curtain lift (`yPercent: -6`, `scale: 0.98`)
+  - Timeline → PrizePool: Depth stack (`scale: 0.97`, `yPercent: -4`)
+  - PrizePool → Memories: Gentle curtain lift (`yPercent: -6`, `scale: 0.98`) into Memories journey
+  - Memories → Sponsors: Smooth vertical rise and depth reveal (`yPercent: 6 -> 0`, `scale: 0.98 -> 1`, `opacity: 0.5 -> 1`)
+  - Sponsors → FAQ: Gentle depth recession (`scale: 0.98`, `yPercent: -6`)
+  - FAQ → Contact: Curtain finale (`yPercent: -6`, `scale: 0.98`)
+- Zero `filter: brightness()`: pure spatial scaling and opacity transitions to eliminate dark muddy overlays and GPU redraw lag.
+- Card lip elevation: top rounded corners (`clamp(16px, 2.5vw, 28px)`), crisp golden rim highlight (`rgba(251, 191, 36, 0.15)`), and soft layered shadow (`0 -10px 28px rgba(0, 0, 0, 0.4)`).
 - Complete cleanup: `teardown()` reverts GSAP contexts, disconnects `ResizeObserver`, unbinds window listeners, and resets inline styles.
 - Strict reduced-motion fallback: completely deactivated when motion is reduced.
 

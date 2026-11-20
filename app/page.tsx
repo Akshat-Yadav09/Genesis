@@ -11,7 +11,6 @@ import MemoriesSection from "./components/MemoriesSection";
 import SponsorsSection from "./components/SponsorsSection";
 import FAQSection from "./components/FAQSection";
 import ContactSection from "./components/ContactSection";
-import useSectionEntrances from "./components/useSectionEntrances";
 import useSectionTransitions from "./components/useSectionTransitions";
 import "./components/section-transitions.css";
 
@@ -42,9 +41,6 @@ export default function Home() {
   const logoRef = useRef<HTMLDivElement>(null);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
   const lastSectionRef = useRef<"hero" | "about" | "timeline" | "prizepool" | "memories" | "sponsors" | "faq" | "contact">("hero");
-
-  // Reveal-on-scroll entrances for below-the-fold sections
-  useSectionEntrances(containerRef);
 
   // Sticky-stack card transitions between below-the-fold sections
   useSectionTransitions(containerRef);
@@ -271,8 +267,9 @@ export default function Home() {
   return (
     <main
       ref={containerRef}
-      className="relative w-full h-screen overflow-y-auto overflow-x-hidden select-none bg-[#030015]"
+      className="relative w-full max-w-full h-screen overflow-y-auto overflow-x-hidden select-none bg-[#030015]"
       style={{
+        overflowX: "clip",
         ["--mx" as string]: 0,
         ["--my" as string]: 0,
       }}
@@ -328,6 +325,7 @@ export default function Home() {
         </div>
 
         {/* ── NATURALLY FALLING METEORS & COMETS (GPU ACCELERATED & IMMEDIATE MOTION) ── */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
         {/* Meteor 1: Hero Large Meteor blazing across upper-left */}
         <div 
           className="absolute pointer-events-none z-10 gpu-accel opacity-0"
@@ -438,7 +436,10 @@ export default function Home() {
           />
         </div>
 
+        </div>
+
         {/* ── Celestial Planets & Asteroids ──────────────────── */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden z-10" aria-hidden="true">
         {/* Large Blue Cratered Planet (Top Left) */}
         <div 
           className="absolute pointer-events-none z-10 gpu-accel"
@@ -551,6 +552,7 @@ export default function Home() {
               className="w-full h-full object-contain opacity-85"
             />
           </div>
+        </div>
         </div>
 
         {/* ── TOP NAVIGATION BAR ─────────────────────────────── */}
@@ -901,6 +903,7 @@ export default function Home() {
             alt="Genesis Observatory Stage Floor"
             fill
             sizes="100vw"
+            priority
             className="object-fill object-bottom select-none pointer-events-none"
           />
         </div>

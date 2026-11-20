@@ -69,6 +69,28 @@ Record material choices with status and evidence. Do not retroactively describe 
   6. Enforce full `prefers-reduced-motion` safety in both CSS and JavaScript.
 - **Consequences:** Tactile, polished section transitions with zero layout shift, smooth performance on desktop and mobile, and full accessibility fallback.
 
+## ADR-008: Comprehensive Frontend, UI/UX & Sticky-Stack Transition Refinement
+- **Status:** Accepted.
+- **Date:** 2026-11-20.
+- **Context:** Following the initial transition and curve gallery implementation, user testing identified critical immersion and performance defects:
+  1. The section transitions were choppy and stuttered during mouse-wheel and touch scrolling due to controller contention between `useSectionEntrances` and `useSectionTransitions`.
+  2. A pitch-black overlay crushed contrast and visual fidelity across sections (Prize Pool brightness dropped to 0.054, FAQ dropped to 0.1489) due to compounding CSS `filter: brightness()`.
+  3. Severe horizontal overflow (+286px on desktop, +148px on tablet, +75px on mobile) occurred due to `w-screen` on Sponsors, horizontal `xPercent: 22` transforms, and unclipped Hero meteor/celestial particle animations.
+  4. Interactive touch targets on Memories scroll toggle (39px), Contact map link (34px), and Contact social buttons (42px) fell below the WCAG 44x44px accessibility threshold.
+  5. Sponsors title and crown assets truncated on narrow mobile screens (320px–375px).
+- **Decision:**
+  1. Consolidate section animation ownership exclusively in `useSectionTransitions.ts`. Remove duplicate `useSectionEntrances` invocation from `app/page.tsx` to eliminate transform matrix collisions.
+  2. Upgrade all scrubbers to `scrub: 0.6` for smooth inertial damping during both downward and upward scrolling.
+  3. Completely eliminate all CSS `filter: brightness()` statements from the animation pipeline. Replace dimming with subtle physical depth scaling (`scale: 0.98`, `yPercent: -6%`), layered card-lip box shadows (`0 -10px 28px rgba(0, 0, 0, 0.4)`), and amber rim highlights (`0 -1px 0 rgba(251, 191, 36, 0.15)`).
+  4. Fix all horizontal overflows: replace `w-screen` (`100vw`) with `w-full max-w-full`, replace sideways slide `xPercent: 22` on Sponsors with an in-place vertical depth reveal (`scale: 0.98 -> 1`, `opacity: 0.5 -> 1`, `yPercent: 6 -> 0`), and wrap Hero meteors/celestial bodies in `overflow-hidden` containers.
+  5. Increase all sub-44px touch targets to `>= 44px` with comfortable padding and `:focus-visible` styling (`.memories-scroll-toggle`, `.genesis-contact__map-link`, `.genesis-contact__social`).
+  6. Responsively scale Sponsors header graphics on mobile viewports to prevent asset truncation.
+  7. Preserve 100% of event facts ("5 MARCH – 6 MARCH, 2027", prize amounts, sponsor logos, Three.js WebGL Memories curve gallery with 500 planes and 29 authentic photos).
+  8. Eliminate ghost background bleeding across sticky sections: enforce an explicit escalating z-index stacking hierarchy (`#about: 1` through `#contact: 20`), remove entrance opacity and yPercent offsets from incoming sections, and dynamically toggle `visibility: hidden` via ScrollTrigger (`onToggle`) once an outgoing section is fully covered at `seamEnd` (restoring visibility when scrolling back up).
+- **Alternatives considered:** CSS backdrop-filter darkening (still incurs heavy GPU raster cost on scroll), scroll-jacking/pinning entire page (violates mobile usability).
+- **Consequences:** Restored full color saturation and contrast across all sections; silky 60fps bidirectional scrolling; zero horizontal bleed across 320px–1920px viewports; full WCAG touch target compliance; clean Next.js build.
+- **Verification:** Automated headless Chrome audit via Chrome DevTools Protocol across 7 viewports (1920px, 1440px, 1024px, 768px, 425px, 375px, 320px), before/after screenshot comparisons in `audit_screenshots/`, and clean passes on `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
+
 ## New decision template
 ```
 ## ADR-XXX: Title

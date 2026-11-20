@@ -11,6 +11,11 @@
 
 :root {
   --gdai-right-offset: 200px;
+  --genesis-motion-fast: 160ms;
+  --genesis-motion-standard: 280ms;
+  --genesis-motion-reveal: 560ms;
+  --genesis-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --genesis-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── ABOUT SECTION V3: ADAPTIVE FULL-SCREEN & REFERENCE ACCURATE ── */
@@ -195,7 +200,7 @@
   }
 
   .about-overlay-gradient {
-    width: 100vw;
+    width: 100%;
     background: linear-gradient(to bottom,
         rgba(3, 0, 21, 0.78) 0%,
         rgba(3, 0, 21, 0.92) 28%,
@@ -1460,14 +1465,16 @@ body {
 
 @media (max-width: 767px) {
   .hero-header {
-    --gdai-right-offset: 10px;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 14px;
+    padding-right: 14px;
   }
 
   .hero-gdai {
-    transform: scale(0.72);
-    transform-origin: top right;
+    left: 14px !important;
+    right: auto !important;
+    top: 10px !important;
+    transform: scale(0.68);
+    transform-origin: top left;
   }
 
   .hero-nav {
@@ -1493,14 +1500,14 @@ body {
   }
 
   .hero-controls {
-    top: 132px;
-    right: 12px;
+    top: 10px !important;
+    right: 14px !important;
     margin-top: 0;
     gap: 6px;
   }
 
   .hero-logo {
-    top: 18%;
+    top: 16%;
     width: 100%;
   }
 
@@ -1515,7 +1522,7 @@ body {
   }
 
   .hero-moon-halo {
-    width: min(100vw, 520px) !important;
+    width: min(100%, 520px) !important;
     height: min(64vw, 300px) !important;
   }
 
@@ -1526,7 +1533,7 @@ body {
   }
 
   .hero-register {
-    bottom: 34% !important;
+    bottom: clamp(37%, 39vh, 43%) !important;
   }
 
   .hero-register img {
@@ -1535,15 +1542,15 @@ body {
   }
 
   .hero-colt {
-    left: 2% !important;
-    bottom: 27% !important;
-    width: min(46vw, 220px) !important;
+    left: -2% !important;
+    bottom: 25% !important;
+    width: min(44vw, 200px) !important;
   }
 
   .hero-leon {
-    right: 2% !important;
-    bottom: 25.5% !important;
-    width: min(44vw, 210px) !important;
+    right: -2% !important;
+    bottom: 24% !important;
+    width: min(42vw, 190px) !important;
   }
 
   .hero-stage {
@@ -2301,13 +2308,14 @@ body {
   }
 
   .hero-gdai {
-    top: 0 !important;
-    right: calc(var(--mobile-header-inset) + var(--mobile-menu-width) + var(--mobile-header-gap)) !important;
+    top: var(--mobile-header-inset) !important;
+    left: var(--mobile-header-inset) !important;
+    right: auto !important;
     transform: none !important;
   }
 
   .hero-gdai img {
-    width: clamp(52px, 15vw, 64px);
+    width: clamp(48px, 14vw, 60px);
     height: auto;
   }
 
@@ -2344,7 +2352,7 @@ body {
   }
 
   .hero-logo {
-    top: clamp(14%, 18vh, 20%) !important;
+    top: clamp(13%, 16vh, 18%) !important;
   }
 
   .hero-logo img {
@@ -2353,23 +2361,24 @@ body {
   }
 
   .hero-register {
-    bottom: clamp(34%, 37vh, 41%) !important;
+    bottom: clamp(37%, 40vh, 44%) !important;
+    z-index: 28;
   }
 
   .hero-register img {
-    width: min(72vw, 205px) !important;
+    width: min(58vw, 195px) !important;
     height: auto;
   }
 
   .hero-colt {
-    left: 1% !important;
-    bottom: 27% !important;
-    width: min(48vw, 205px) !important;
+    left: -4% !important;
+    bottom: 24% !important;
+    width: min(44vw, 185px) !important;
   }
 
   .hero-leon {
-    right: 1% !important;
-    bottom: 26% !important;
-    width: min(46vw, 200px) !important;
+    right: -4% !important;
+    bottom: 23% !important;
+    width: min(42vw, 175px) !important;
   }
 }
