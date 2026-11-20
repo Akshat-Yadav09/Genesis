@@ -31,28 +31,38 @@ const PATH_FILES = [
 ];
 
 const TEXTURE_SOURCES = [
-  "/landing-pages/memories/photos/memory-01.webp",
-  "/landing-pages/memories/photos/memory-02.webp",
-  "/landing-pages/memories/photos/memory-03.webp",
-  "/landing-pages/memories/photos/memory-04.webp",
-  "/landing-pages/memories/photos/memory-05.webp",
-  "/landing-pages/memories/photos/memory-06.webp",
-  "/landing-pages/memories/photos/memory-07.webp",
-  "/landing-pages/memories/photos/memory-08.webp",
-  "/landing-pages/memories/photos/memory-01.webp",
-  "/landing-pages/memories/photos/memory-03.webp",
-  "/landing-pages/memories/photos/memory-05.webp",
-  "/landing-pages/memories/photos/memory-07.webp",
-  "/landing-pages/memories/photos/memory-02.webp",
-  "/landing-pages/memories/photos/memory-04.webp",
-  "/landing-pages/memories/photos/memory-06.webp",
-  "/landing-pages/memories/photos/memory-08.webp",
-  "/landing-pages/memories/photos/memory-01.webp",
-  "/landing-pages/memories/photos/memory-04.webp",
-  "/landing-pages/memories/photos/memory-07.webp",
+  "/memories/photos/photo-01.webp",
+  "/memories/photos/photo-02.webp",
+  "/memories/photos/photo-03.webp",
+  "/memories/photos/photo-04.webp",
+  "/memories/photos/photo-05.webp",
+  "/memories/photos/photo-06.webp",
+  "/memories/photos/photo-07.webp",
+  "/memories/photos/photo-08.webp",
+  "/memories/photos/photo-09.webp",
+  "/memories/photos/photo-10.webp",
+  "/memories/photos/photo-11.webp",
+  "/memories/photos/photo-12.webp",
+  "/memories/photos/photo-13.webp",
+  "/memories/photos/photo-14.webp",
+  "/memories/photos/photo-15.webp",
+  "/memories/photos/photo-16.webp",
+  "/memories/photos/photo-17.webp",
+  "/memories/photos/photo-18.webp",
+  "/memories/photos/photo-19.webp",
+  "/memories/photos/photo-20.webp",
+  "/memories/photos/photo-21.webp",
+  "/memories/photos/photo-22.webp",
+  "/memories/photos/photo-23.webp",
+  "/memories/photos/photo-24.webp",
+  "/memories/photos/photo-25.webp",
+  "/memories/photos/photo-26.webp",
+  "/memories/photos/photo-27.webp",
+  "/memories/photos/photo-28.webp",
+  "/memories/photos/photo-29.webp",
 ] as const;
 
-const TEX_VARIANTS = TEXTURE_SOURCES.length; // 19
+const TEX_VARIANTS = TEXTURE_SOURCES.length; // 29
 
 function randomBetween(min: number, max: number): number {
   return min + Math.random() * (max - min);

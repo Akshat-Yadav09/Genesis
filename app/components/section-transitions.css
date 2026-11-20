@@ -1,0 +1,46 @@
+/* GENESIS section transitions — sticky-stack polish.
+   The mechanics live in useSectionTransitions.ts; this file only adds the
+   "card lip" (rounded top + subtle rim border and soft shadow) on covering
+   sections and fixes stacking order. Everything is gated behind
+   prefers-reduced-motion: no-preference, so reduced-motion users get the
+   plain static page. */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Contain each section's inner z-indexes so DOM order decides which
+     section paints on top when they overlap. */
+  main > section#about,
+  main > section#timeline,
+  main > section#prizepool,
+  main > section#memories,
+  main > section#sponsors,
+  main > section#faq,
+  main > section#contact {
+    isolation: isolate;
+  }
+
+  /* FAQ's own stylesheet gives it z-index:10; contact must sit above it
+     for the final curtain cover. */
+  main > section#contact {
+    position: relative;
+    z-index: 20;
+  }
+
+  /* Card lip: rounded top corners + crisp subtle rim highlight and soft shadow.
+     Eliminates heavy dark blur overlays that hurt performance and immersion. */
+  main > section#timeline,
+  main > section#prizepool,
+  main > section#memories,
+  main > section#sponsors,
+  main > section#faq,
+  main > section#contact {
+    border-radius: clamp(16px, 2.5vw, 28px) clamp(16px, 2.5vw, 28px) 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Prevent horizontal scroll leakage during sponsors slide-in on mobile */
+  main > section#sponsors {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+}

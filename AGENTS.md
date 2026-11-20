@@ -20,3 +20,13 @@ Use the project roles in `.codex/agents/` for changes that benefit from delegati
 Subagents inherit the parent session's sandbox. Run exploration, browser QA, and review in a parent launched with `codex -s read-only -a never`. Run implementation and integration in a separate parent launched with `codex -s workspace-write -a never`. Carry forward the task, owned paths, diff base, and QA findings between sessions. Start runtime tools and generate build artifacts from the writable session.
 
 Preserve Genesis branding, assets, and approved event facts. Keep changes scoped, avoid unnecessary dependencies, and keep secrets out of files and reports. Push, merge, and deploy only with explicit approval.
+
+## Frontend design skill selection
+
+Project-local skills under `.agents/skills/` supplement, but do not override, repository instructions or the Genesis-specific skills.
+
+- Use `design-taste-frontend` (Taste) for visual direction, typography, composition, and visual identity.
+- Use `ui-ux-pro-max` for design systems, responsiveness, layout, and usability.
+- Use `impeccable` for design critique, accessibility, consistency, and final polish.
+- Keep `genesis-ui-engineering`, `genesis-accessibility-ux`, the Genesis motion skills, and `genesis-production-review` authoritative for project facts, architecture, animation ownership, and release gates. Do not invoke overlapping general skills when a narrower Genesis skill already answers the task.
+- Do not enable Taste or Impeccable hooks, Impeccable live mode, or commands that bypass approvals or sandboxing. Treat their scripts and datasets as optional local tools; review a command before running it and never allow it to install dependencies or modify unrelated files.

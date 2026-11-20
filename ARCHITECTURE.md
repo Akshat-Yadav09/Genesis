@@ -31,11 +31,14 @@ A single-page public Genesis event website with interactive hero and sections, p
 | `app/components/ContactSection.tsx`, `contact-section.css` | Venue, embedded map, contact/social links | Verify external links, map loading behavior, privacy and accessibility. |
 | `app/components/sound.ts` | Generated interaction audio | User gesture required; provide mute/volume affordances if used broadly. |
 | `app/components/ClientCleanup.tsx` | Service-worker and cache cleanup | Review before change: can have performance/offline implications. |
+| `app/components/useSectionEntrances.ts` | Reveal-on-scroll entrance hook for below-the-fold sections | GSAP ScrollTrigger scroller-bound reveal animation with clearProps and prefers-reduced-motion safety. |
+| `app/components/useSectionTransitions.ts`, `section-transitions.css` | Sticky-stack card transition hook and visual elevation styles | GSAP ScrollTrigger seam scrubbing, dynamic sticky geometry calculation, isolation stacking, and card-lip shadows. |
 
 ## Asset ownership
 - `public/landing-pages/`: primary section visuals (report says 118 files).
 - `public/documents/GENESIS_6_BROCHURE_.pdf`: brochure payload.
-- Other `public/about*/`, `public/assets/`, `public/prize-pool/`, `public/sponsors/`, and `public/timeline/`: variants and public artwork.
+- Other `public/about*/`, `public/assets/`, `public/memories/`, `public/prize-pool/`, `public/sponsors/`, and `public/timeline/`: variants and public artwork.
+- `photos/`: original high-resolution Genesis event photography from the organizer.
 - Root `components/` and `required files/`: design exports, not the application's React component directory.
 - Never delete apparently unused artwork without finding references and checking whether it is an approved design source.
 
@@ -48,7 +51,7 @@ A single-page public Genesis event website with interactive hero and sections, p
 ### Memories rendering flow
 1. `MemoriesSection` renders the heading and eight-photo semantic fallback immediately in SSR and initial HTML.
 2. Visitors without reduced motion load `CurveMemoriesGallery` dynamically with `ssr: false`.
-3. The gallery loads the 5 original path JSON files (`path1.json` through `path5.json`) at runtime from `public/landing-pages/memories/curve-gallery/paths/`, creating 500 planes with 19 texture slots from Genesis photos.
+3. The gallery loads the 5 original path JSON files (`path1.json` through `path5.json`) at runtime from `public/landing-pages/memories/curve-gallery/paths/`, creating 500 planes with 29 texture slots from authentic Genesis photos.
 4. Camera motion and focus enlargement are handled via Three.js CatmullRomCurve3 and `gsap.quickTo`. GSAP Observer (`wheel,touch,pointer`) is scoped to the homepage's internal `<main>` scroller without `preventDefault` and enabled only when Memories intersects the viewport.
 5. Path buttons and Scroll/Auto controls allow real-time path redistribution and automated 10-second camera cycles.
 6. WebGL failure, context loss, or `prefers-reduced-motion: reduce` unmounts the canvas and leaves the accessible static DOM photo grid in normal document flow.

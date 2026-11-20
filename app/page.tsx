@@ -11,6 +11,9 @@ import MemoriesSection from "./components/MemoriesSection";
 import SponsorsSection from "./components/SponsorsSection";
 import FAQSection from "./components/FAQSection";
 import ContactSection from "./components/ContactSection";
+import useSectionEntrances from "./components/useSectionEntrances";
+import useSectionTransitions from "./components/useSectionTransitions";
+import "./components/section-transitions.css";
 
 // Deterministic twinkling stars with individual drift offsets
 const STARS = Array.from({ length: 90 }, (_, i) => ({
@@ -39,6 +42,12 @@ export default function Home() {
   const logoRef = useRef<HTMLDivElement>(null);
   const [isLogoHovered, setIsLogoHovered] = useState(false);
   const lastSectionRef = useRef<"hero" | "about" | "timeline" | "prizepool" | "memories" | "sponsors" | "faq" | "contact">("hero");
+
+  // Reveal-on-scroll entrances for below-the-fold sections
+  useSectionEntrances(containerRef);
+
+  // Sticky-stack card transitions between below-the-fold sections
+  useSectionTransitions(containerRef);
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 767px)");
