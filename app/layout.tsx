@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Bangers, Lilita_One } from "next/font/google";
+import { Geist, Geist_Mono, Bangers, Lilita_One, Fredoka } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,6 +21,12 @@ const bangers = Bangers({
 const lilitaOne = Lilita_One({
   variable: "--font-lilita",
   weight: "400",
+  subsets: ["latin"],
+});
+
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
+  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
 });
 
@@ -46,7 +52,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${bangers.variable} ${lilitaOne.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${bangers.variable} ${lilitaOne.variable} ${fredoka.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-[#030015] text-white selection:bg-amber-500 selection:text-black">
         <ClientCleanup />
