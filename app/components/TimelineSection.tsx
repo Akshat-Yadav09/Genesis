@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
+import { createTimelineParticles } from "./timelineParticles";
 
 const stages = [
   {
@@ -48,11 +49,13 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
   const sectionRef = useRef<HTMLElement>(null);
   const journeyRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const particlesRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
     const section = sectionRef.current;
     const journey = journeyRef.current;
     const track = trackRef.current;
+    const canvas = particlesRef.current;
     const scroller = scrollContainerRef.current;
 
     if (!section || !journey || !track || !scroller) return;
@@ -72,6 +75,8 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
     let firstMarkerY = 0;
     let lastMarkerY = 0;
     let frame = 0;
+    let scrollPending = false;
+    let resizePending = false;
 
     const updateProgress = () => {
       if (markerCenters.length !== markers.length || lastMarkerY <= firstMarkerY) return;
@@ -121,23 +126,36 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
       track.style.top = `${trackTop}px`;
       track.style.bottom = "auto";
       track.style.height = `${Math.max(1, lastMarkerY - firstMarkerY)}px`;
-      updateProgress();
     };
 
-    const scheduleUpdate = () => {
+    measureGeometry();
+    updateProgress();
+    const particles = canvas ? createTimelineParticles(canvas, track, scroller) : null;
+
+    const scheduleFrame = () => {
       if (frame) return;
-      frame = window.requestAnimationFrame(() => {
+      frame = window.requestAnimationFrame((timestamp) => {
         frame = 0;
+        if (resizePending) {
+          resizePending = false;
+          measureGeometry();
+        }
+        if (scrollPending) {
+          scrollPending = false;
+          particles?.onScroll(scroller.scrollTop, timestamp);
+        }
         updateProgress();
       });
     };
 
+    const scheduleUpdate = () => {
+      scrollPending = true;
+      scheduleFrame();
+    };
+
     const handleResize = () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        measureGeometry();
-      });
+      resizePending = true;
+      scheduleFrame();
     };
 
     scroller.addEventListener("scroll", scheduleUpdate, { passive: true });
@@ -145,13 +163,12 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(journey);
 
-    measureGeometry();
-
     return () => {
       scroller.removeEventListener("scroll", scheduleUpdate);
       window.removeEventListener("resize", handleResize);
       resizeObserver.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
+      particles?.destroy();
     };
   }, [scrollContainerRef]);
 
@@ -173,6 +190,7 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
       <div ref={journeyRef} className="genesis-timeline-journey relative z-10 mx-auto w-full max-w-6xl px-4 pb-20 sm:px-8 sm:pb-28">
         <div ref={trackRef} className="genesis-timeline-track" data-runtime="golden-journey-v1" aria-hidden="true">
           <div className="genesis-timeline-progress-fill" />
+          <canvas ref={particlesRef} className="genesis-timeline-particles" aria-hidden="true" />
           <div className="genesis-timeline-traveling-light" />
         </div>
         <div className="genesis-timeline-stages">

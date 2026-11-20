@@ -1,0 +1,46 @@
+.faq-question-card .faq-question-btn:focus-visible {
+  outline: 2px solid #fcd34d;
+  outline-offset: -3px;
+}
+
+.faq-accordion-icon::before {
+  content: "";
+  inline-size: 14px;
+  block-size: 14px;
+  background: url("/landing-pages/faq/ui/icon-plus.svg") center / contain no-repeat;
+}
+
+.faq-accordion-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms ease-out;
+}
+
+.faq-accordion-answer:not([inert]) {
+  grid-template-rows: 1fr;
+}
+
+.faq-accordion-clip {
+  min-block-size: 0;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .faq-accordion-icon::before {
+    inline-size: 16px;
+    block-size: 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .faq-accordion-icon::before {
+    inline-size: 17px;
+    block-size: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-accordion-answer {
+    transition: none;
+  }
+}
