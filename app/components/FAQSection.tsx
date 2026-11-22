@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { FAQ_DATA, type FAQCategory } from "../data/faqData";
 import FAQAccordionItem from "./FAQAccordionItem";
+import CloudDivider from "./CloudDivider";
 import { sounds } from "./sound";
 import "./faq-section.css";
 
@@ -37,7 +38,10 @@ export default function FAQSection() {
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(3,0,21,0.6)_100%)]" />
         <div className="absolute top-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-b from-[#030015] to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-t from-[#030015] to-transparent" />
       </div>
+
+      <CloudDivider />
 
       <div className="genesis-faq__layout">
         <h2 id="faq-heading" className="genesis-faq__heading">
@@ -122,6 +126,8 @@ export default function FAQSection() {
           </div>
         </div>
       </div>
+
+      <CloudDivider position="bottom" />
     </section>
   );
 }

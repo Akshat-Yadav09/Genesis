@@ -2,11 +2,23 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import { Observer } from "gsap/Observer";
 import * as THREE from "three";
 import type { CurveMemoriesGalleryProps } from "./memoriesData";
 
-gsap.registerPlugin(Observer);
+interface MemoriesGalleryDebug {
+  getMaxPlaneScale: () => number;
+  getPlanesInFocusCount: () => number;
+  getCamT: () => number;
+  getTargetT: () => number;
+  getIsActive: () => boolean;
+  getIsIntersecting: () => boolean;
+}
+
+declare global {
+  interface Window {
+    __memoriesGallery?: MemoriesGalleryDebug;
+  }
+}
 
 const SCALE = 16;
 const TOTAL = 500;
@@ -102,6 +114,7 @@ export default function CurveMemoriesGallery({
     const host = hostRef.current;
     const scroller = scrollContainerRef.current;
     const section = host?.closest<HTMLElement>(".genesis-memories");
+    const viewport = section?.querySelector<HTMLElement>(".memories-viewport");
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     if (!host || !scroller || !section || reducedMotion.matches) {
@@ -113,7 +126,6 @@ export default function CurveMemoriesGallery({
     let renderer: THREE.WebGLRenderer | null = null;
     let scene: THREE.Scene | null = null;
     let camera: THREE.PerspectiveCamera | null = null;
-    let observer: Observer | null = null;
     let visibilityObserver: IntersectionObserver | null = null;
     let resizeObserver: ResizeObserver | null = null;
     let renderFrameId = 0;
@@ -126,13 +138,41 @@ export default function CurveMemoriesGallery({
 
     const camPos = { x: 0, y: 0, z: 0 };
     const camProxy = { t: 0 };
-    let setCamT: gsap.QuickToFunc | null = null;
+    const setCamT = (val: number) => {
+      gsap.to(camProxy, {
+        t: val,
+        duration: 0.8,
+        ease: "power2.out",
+        overwrite: "auto",
+      });
+    };
     let targetT = 0;
     let autoScroll = false;
     let currentPathIndex = 0;
     let curve: THREE.CatmullRomCurve3 | null = null;
     let focusTGate = 0;
     let lastTime = performance.now();
+
+    // Finite sticky scroll range tracking
+    let sectionTop = 0;
+    let stickyRange = 1;
+    let isInActiveRange = false;
+    let currentScrollProgress = 0;
+    let isIntersecting = false;
+
+    const measureBounds = () => {
+      if (!section || !scroller) return;
+      sectionTop = section.offsetTop;
+      const sectionHeight = section.offsetHeight;
+      const viewportHeight = viewport?.offsetHeight || host.clientHeight || window.innerHeight;
+      stickyRange = Math.max(1, sectionHeight - viewportHeight);
+    };
+
+    const computeProgress = (scrollTop: number) => {
+      if (scrollTop <= sectionTop) return 0;
+      if (scrollTop >= sectionTop + stickyRange) return 1;
+      return (scrollTop - sectionTop) / stickyRange;
+    };
 
     const handleMotionPreference = (event: MediaQueryListEvent) => {
       if (event.matches) {
@@ -150,6 +190,28 @@ export default function CurveMemoriesGallery({
     let changePathListener: EventListener | null = null;
     let changeAutoListener: EventListener | null = null;
     let handleResizeListener: (() => void) | null = null;
+    let handleScrollListener: (() => void) | null = null;
+    let requestRender: (() => void) | null = null;
+
+    const handleScroll = () => {
+      if (destroyed || !scroller) return;
+      const scrollTop = scroller.scrollTop;
+      currentScrollProgress = computeProgress(scrollTop);
+      isInActiveRange = scrollTop >= sectionTop && scrollTop <= sectionTop + stickyRange;
+
+      if (!autoScroll) {
+        targetT = currentScrollProgress;
+        setCamT(targetT);
+      }
+
+      const sectionHeight = section.offsetHeight;
+      const isNearSection =
+        scrollTop + scroller.clientHeight >= sectionTop && scrollTop <= sectionTop + sectionHeight;
+      if (isIntersecting || isNearSection) {
+        requestRender?.();
+      }
+    };
+    handleScrollListener = handleScroll;
 
     const cleanup = () => {
       if (destroyed) return;
@@ -170,15 +232,16 @@ export default function CurveMemoriesGallery({
       if (handleResizeListener) {
         window.removeEventListener("resize", handleResizeListener);
       }
+      if (handleScrollListener && scroller) {
+        scroller.removeEventListener("scroll", handleScrollListener);
+      }
+      requestRender = null;
 
       visibilityObserver?.disconnect();
       visibilityObserver = null;
 
       resizeObserver?.disconnect();
       resizeObserver = null;
-
-      observer?.kill();
-      observer = null;
 
       gsap.killTweensOf(camPos);
       gsap.killTweensOf(camProxy);
@@ -207,6 +270,9 @@ export default function CurveMemoriesGallery({
         renderer = null;
       }
 
+      if (typeof window !== "undefined") {
+        delete window.__memoriesGallery;
+      }
       scene?.clear();
       scene = null;
       camera = null;
@@ -226,7 +292,7 @@ export default function CurveMemoriesGallery({
 
         if (destroyed) return;
 
-        // Load 8 unique textures
+        // Load unique textures
         const textureLoader = new THREE.TextureLoader();
         const uniqueSources = Array.from(new Set(TEXTURE_SOURCES));
         const texMap = new Map<string, THREE.Texture>();
@@ -259,7 +325,6 @@ export default function CurveMemoriesGallery({
         uniqueTextures = Array.from(texMap.values());
         const textures = TEXTURE_SOURCES.map((src) => texMap.get(src)!);
 
-        // 19 materials
         materials = textures.map(
           (tex) =>
             new THREE.MeshBasicMaterial({
@@ -271,7 +336,8 @@ export default function CurveMemoriesGallery({
         const width = host.clientWidth || window.innerWidth;
         const height = host.clientHeight || window.innerHeight;
 
-        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setClearColor(0x000000, 0);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
         renderer.setSize(width, height);
         renderer.domElement.setAttribute("aria-hidden", "true");
@@ -280,8 +346,8 @@ export default function CurveMemoriesGallery({
         host.appendChild(renderer.domElement);
 
         scene = new THREE.Scene();
-        scene.background = new THREE.Color("#020817");
-        scene.fog = new THREE.Fog("#061936", 10, 40);
+        scene.background = null;
+        scene.fog = new THREE.FogExp2("#0c0424", 0.012);
 
         camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 200);
 
@@ -289,14 +355,19 @@ export default function CurveMemoriesGallery({
         curve = buildCurve(allRaws[0]);
         focusTGate = (FOCUS_DIST * 1.5) / curve.getLength();
 
-        function createScaleAnimator(mesh: THREE.Mesh) {
-          const proxy = { value: 1 };
-          proxies.push(proxy);
-          return gsap.quickTo(proxy, "value", {
-            duration: 0.4,
-            ease: "power3.out",
-            onUpdate: () => mesh.scale.setScalar(proxy.value),
-          });
+        function attachScaleAnimators() {
+          proxies.forEach((proxy) => gsap.killTweensOf(proxy));
+          proxies = [];
+          for (const mesh of planes) {
+            const currentScale = mesh.scale.x || 1;
+            const proxy = { value: currentScale };
+            proxies.push(proxy);
+            mesh.userData.setScale = gsap.quickTo(proxy, "value", {
+              duration: 0.4,
+              ease: "power3.out",
+              onUpdate: () => mesh.scale.setScalar(proxy.value),
+            });
+          }
         }
 
         for (let i = 0; i < TOTAL; i++) {
@@ -322,11 +393,12 @@ export default function CurveMemoriesGallery({
           mesh.userData.t = t;
           mesh.userData.lateralOffset = lateralOffset;
           mesh.userData.depthOffset = depthOffset;
-          mesh.userData.setScale = createScaleAnimator(mesh);
 
           planes.push(mesh);
           scene.add(mesh);
         }
+
+        attachScaleAnimators();
 
         function redistributePlanes(newCurve: THREE.CatmullRomCurve3) {
           planes.forEach((mesh) => {
@@ -343,21 +415,7 @@ export default function CurveMemoriesGallery({
           });
         }
 
-        setCamT = gsap.quickTo(camProxy, "t", { duration: 1, ease: "power3.out" });
 
-        let sensitivity = 0.8 / ((scroller.clientHeight || height) * 4);
-
-        observer = Observer.create({
-          target: scroller,
-          type: "wheel,touch,pointer",
-          preventDefault: false,
-          onChange: (self) => {
-            if (autoScroll) return;
-            targetT += self.deltaY * sensitivity;
-            setCamT?.(targetT);
-          },
-        });
-        observer.disable();
 
         const changePath = (event: Event) => {
           const customEvent = event as CustomEvent<{ index?: number }>;
@@ -394,15 +452,30 @@ export default function CurveMemoriesGallery({
 
         const changeAutoMode = (event: Event) => {
           const customEvent = event as CustomEvent<{ enabled?: boolean }>;
-          autoScroll = Boolean(customEvent.detail?.enabled);
-          if (!autoScroll) {
-            targetT = camProxy.t;
+          const nextAuto = Boolean(customEvent.detail?.enabled);
+          if (autoScroll && !nextAuto) {
+            // Switching from Auto back to Scroll mode:
+            // Normalize camProxy.t modulo 1 without altering 3D position
+            autoScroll = false;
+            camProxy.t = ((camProxy.t % 1) + 1) % 1;
+            // Ease along shortest angular route to currentScrollProgress to avoid camera jump
+            let diff = currentScrollProgress - camProxy.t;
+            if (diff > 0.5) diff -= 1;
+            else if (diff < -0.5) diff += 1;
+            targetT = camProxy.t + diff;
+            setCamT?.(targetT);
+          } else {
+            autoScroll = nextAuto;
+            if (autoScroll) {
+              targetT = camProxy.t;
+            }
           }
         };
         changeAutoListener = changeAutoMode;
 
         section.addEventListener("genesis:memories-path", changePathListener);
         section.addEventListener("genesis:memories-auto", changeAutoListener);
+        scroller.addEventListener("scroll", handleScrollListener, { passive: true });
         reducedMotion.addEventListener("change", handleMotionPreference);
 
         function animate() {
@@ -413,9 +486,10 @@ export default function CurveMemoriesGallery({
           const delta = (now - lastTime) / 1000;
           lastTime = now;
 
-          if (autoScroll) {
+          // Auto may advance ONLY inside the active sticky range
+          if (autoScroll && isInActiveRange) {
             targetT += AUTO_T_PER_SEC * delta;
-            setCamT?.(targetT);
+            setCamT(targetT);
           }
 
           if (!curve || !camera || !scene || !renderer) return;
@@ -450,33 +524,74 @@ export default function CurveMemoriesGallery({
           renderer.render(scene, camera);
         }
 
+        requestRender = () => {
+          if (!renderFrameId && !destroyed) {
+            lastTime = performance.now();
+            renderFrameId = window.requestAnimationFrame(animate);
+          }
+        };
+
         const handleResize = () => {
-          if (!renderer || !camera || !host || destroyed) return;
+          if (!renderer || !camera || !host || destroyed || !scroller) return;
           const w = host.clientWidth || window.innerWidth;
           const h = host.clientHeight || window.innerHeight;
           camera.aspect = w / h;
           camera.updateProjectionMatrix();
           renderer.setSize(w, h);
           renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-          sensitivity = 0.8 / ((scroller.clientHeight || h) * 4);
+
+          measureBounds();
+          const scrollTop = scroller.scrollTop;
+          currentScrollProgress = computeProgress(scrollTop);
+          isInActiveRange = scrollTop >= sectionTop && scrollTop <= sectionTop + stickyRange;
+          if (!autoScroll) {
+            targetT = currentScrollProgress;
+            setCamT?.(targetT);
+          }
         };
         handleResizeListener = handleResize;
 
         window.addEventListener("resize", handleResizeListener);
         resizeObserver = new ResizeObserver(handleResizeListener);
         resizeObserver.observe(host);
+        resizeObserver.observe(section);
 
         visibilityObserver = new IntersectionObserver(
           ([entry]) => {
-            const isIntersecting = Boolean(entry?.isIntersecting);
+            isIntersecting = Boolean(entry?.isIntersecting);
             if (isIntersecting) {
-              observer?.enable();
-              lastTime = performance.now();
-              if (!renderFrameId) {
-                renderFrameId = window.requestAnimationFrame(animate);
+              // Ensure photo-scale animators exist on re-entry
+              if (proxies.length === 0 && planes.length > 0) {
+                attachScaleAnimators();
               }
+              measureBounds();
+              const scrollTop = scroller.scrollTop;
+              currentScrollProgress = computeProgress(scrollTop);
+              isInActiveRange = scrollTop >= sectionTop && scrollTop <= sectionTop + stickyRange;
+              if (!autoScroll) {
+                targetT = currentScrollProgress;
+                setCamT(targetT);
+              }
+              requestRender?.();
             } else {
-              observer?.disable();
+              // Scene left view completely: cancel pending camera easing and pause render loop
+              gsap.killTweensOf(camProxy);
+              gsap.killTweensOf(camPos);
+              if (scroller) {
+                const st = scroller.scrollTop;
+                if (st >= sectionTop + stickyRange) {
+                  camProxy.t = 1;
+                } else if (st <= sectionTop) {
+                  camProxy.t = 0;
+                }
+              }
+              // Pause photo-scale and position tweens (preserves reusable quickTo functions on re-entry)
+              proxies.forEach((proxy) => {
+                gsap.getTweensOf(proxy).forEach((tween) => tween.pause());
+              });
+              planes.forEach((mesh) => {
+                gsap.getTweensOf(mesh.position).forEach((tween) => tween.pause());
+              });
               if (renderFrameId) {
                 window.cancelAnimationFrame(renderFrameId);
                 renderFrameId = 0;
@@ -487,21 +602,41 @@ export default function CurveMemoriesGallery({
         );
         visibilityObserver.observe(section);
 
-        // Check if section is already in view initially
+        // Initial setup & single still frame render
+        measureBounds();
+        const initialScrollTop = scroller.scrollTop;
+        currentScrollProgress = computeProgress(initialScrollTop);
+        isInActiveRange = initialScrollTop >= sectionTop && initialScrollTop <= sectionTop + stickyRange;
+        targetT = currentScrollProgress;
+        camProxy.t = targetT; // Instant positioning on initial mount (no animation jump on refresh)
+
+        const initialT = ((1 - camProxy.t) % 1 + 1) % 1;
+        const initialPos = curve.getPoint(initialT);
+        camPos.x = initialPos.x;
+        camPos.y = initialPos.y;
+        camPos.z = initialPos.z + CAM_Z;
+        camera.position.set(camPos.x, camPos.y, camPos.z);
+
         const bounds = section.getBoundingClientRect();
         const scrollerBounds = scroller.getBoundingClientRect();
-        const initiallyVisible =
-          bounds.bottom > scrollerBounds.top && bounds.top < scrollerBounds.bottom;
-        if (initiallyVisible) {
-          observer.enable();
-          lastTime = performance.now();
-          if (!renderFrameId) {
-            renderFrameId = window.requestAnimationFrame(animate);
-          }
+        isIntersecting = bounds.bottom > scrollerBounds.top && bounds.top < scrollerBounds.bottom;
+        if (isIntersecting) {
+          requestRender?.();
         }
 
         renderer.render(scene, camera);
         onReady();
+
+        if (typeof window !== "undefined") {
+          window.__memoriesGallery = {
+            getMaxPlaneScale: () => (planes.length ? Math.max(...planes.map((p) => p.scale.x)) : 1),
+            getPlanesInFocusCount: () => (planes.length ? planes.filter((p) => p.scale.x > 1.2).length : 0),
+            getCamT: () => camProxy.t,
+            getTargetT: () => targetT,
+            getIsActive: () => isInActiveRange,
+            getIsIntersecting: () => isIntersecting,
+          };
+        }
       } catch (err) {
         console.error("CurveMemoriesGallery init error:", err);
         if (!destroyed) {

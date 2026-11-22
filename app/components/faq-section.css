@@ -3,15 +3,18 @@
   z-index: 10;
   flex: none;
   width: 100%;
-  padding-block: clamp(36px, 7vw, 64px) 16px;
-  padding-inline: clamp(16px, 4vw, 24px);
+  padding-block: clamp(64px, 8vw, 92px) clamp(110px, 14vw, 150px);
+  padding-inline: clamp(16px, 4vw, 28px);
   color: #fff;
   background: #030015;
+  box-sizing: border-box;
 }
+
+
 
 .genesis-faq__layout {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
@@ -125,8 +128,8 @@
 
 @media (min-width: 1024px) {
   .genesis-faq {
-    padding-block: clamp(64px, 8svh, 100px) 46px;
-    padding-inline: 32px;
+    padding-block: clamp(84px, 9vw, 120px) clamp(140px, 15vw, 200px);
+    padding-inline: clamp(24px, 4vw, 48px);
   }
 
   .genesis-faq__layout {

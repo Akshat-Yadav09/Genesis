@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, type RefObject } from "react";
+import CloudDivider from "./CloudDivider";
 import { createTimelineParticles } from "./timelineParticles";
 
 const stages = [
@@ -173,11 +174,13 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
   }, [scrollContainerRef]);
 
   return (
-    <section ref={sectionRef} id="timeline" className="genesis-timeline relative w-full overflow-hidden bg-[#030015] text-white" aria-labelledby="timeline-heading">
+    <section ref={sectionRef} id="timeline" className="genesis-timeline relative w-full overflow-x-clip overflow-y-visible bg-[#030015] text-white" aria-labelledby="timeline-heading">
       <div className="absolute inset-0 pointer-events-none">
         <img loading="lazy" decoding="async" src="/landing-pages/shared/backgrounds/cosmic-background.webp" alt="" aria-hidden="true" className="h-full w-full object-cover opacity-75" />
         <div className="absolute inset-0 bg-[#030015]/35" />
       </div>
+
+      <CloudDivider align="inset" shiftY="clamp(-65px, -4.5vw, -30px)" />
 
       <header className="relative z-10 flex justify-center px-4">
         <h2 id="timeline-heading" className="sr-only">Timeline</h2>
