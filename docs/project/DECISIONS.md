@@ -91,6 +91,23 @@ Record material choices with status and evidence. Do not retroactively describe 
 - **Consequences:** Restored full color saturation and contrast across all sections; silky 60fps bidirectional scrolling; zero horizontal bleed across 320px–1920px viewports; full WCAG touch target compliance; clean Next.js build.
 - **Verification:** Automated headless Chrome audit via Chrome DevTools Protocol across 7 viewports (1920px, 1440px, 1024px, 768px, 425px, 375px, 320px), before/after screenshot comparisons in `audit_screenshots/`, and clean passes on `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
 
+## ADR-009: Memories Gallery Sticky-Scroll Alignment, QuickTo Lifecycle, Cloud Dividers, and Sponsors Polish
+- **Status:** Accepted.
+- **Date:** 2026-11-22.
+- **Context:**
+  1. The Memories 3D gallery was loosely coupled to wheel/touch delta events rather than docking within its sticky viewport, leading to erratic camera motion and jumps when scrolling across Prize Pool and Sponsors.
+  2. Photo focus enlargement failed on re-entering Memories after visiting adjacent sections because offscreen cleanup called `gsap.killTweensOf(proxy)`, permanently neutralizing GSAP `quickTo` closures.
+  3. Sponsors cards suffered from disappearing states on reverse scroll, cramped section padding, and required interactive hover feedback.
+  4. Section seams required atmospheric cloud transitions with responsive positioning and speed.
+- **Decision:**
+  1. Drive Memories camera progress directly from normalized scroll progress through the finite sticky range (`(scrollTop - sectionTop) / stickyRange`, clamped to `[0, 1]`). Easing settles camera at $t=0$ on arrival and $t=1$ on exit into Sponsors.
+  2. Fix `quickTo` tween lifecycle by pausing tweens (`tween.pause()`) on offscreen exit rather than destroying them, preserving closure reusability on return visits. Recreate them defensively on re-entry if proxies are empty. Permanent destruction remains on unmount.
+  3. Simplify Sponsors cards to remain front-facing, remove past sponsors, center the normal sponsors board, and apply stable hover scaling (`scale(1.08)`, `translateY(-8px)`) with pointer/reduced-motion guards.
+  4. Implement modular `CloudDivider` component for section seams with animated cloud layers, responsive height variants, and increased padding for Sponsors and FAQs.
+- **Alternatives considered:** Delta accumulation with damping, scroll-locking/wheel-hijacking, static photo fallbacks on re-entry.
+- **Consequences:** Predictable, smooth scroll navigation through Memories on desktop and mobile; robust photo enlargement across multiple section visits; accessible hover interactions; clean visual hierarchy across section transitions.
+- **Verification:** Automated multi-cycle Playwright tests (`scratch/test_enlargement_cycles.js`), full responsive audits (1440px, 768px, 390px, 320px), and clean passes on `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, and `npm run build`.
+
 ## New decision template
 ```
 ## ADR-XXX: Title
