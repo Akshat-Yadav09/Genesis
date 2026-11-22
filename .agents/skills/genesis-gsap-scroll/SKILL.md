@@ -6,7 +6,7 @@ description: Debug, refine or build GSAP and ScrollTrigger interactions for Gene
 # Genesis GSAP Scroll
 
 ## Workflow
-1. Read `ANIMATION_SYSTEM.md` plus `TimelineSection.tsx`, `MemoriesSection.tsx` or the current animation owner.
+1. Read `docs/project/ANIMATION_SYSTEM.md` plus `TimelineSection.tsx`, `MemoriesSection.tsx` or the current animation owner.
 2. Inventory existing GSAP timelines, ScrollTriggers, event listeners and CSS transforms on the relevant nodes.
 3. Describe the animation's trigger, desired end state, and mobile/reduced-motion behavior before editing.
 4. Scope via `gsap.context()` or an approved `useGSAP` hook; ensure teardown on component unmount/remount.

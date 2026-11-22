@@ -3,9 +3,9 @@
   position: relative;
   isolation: isolate;
   width: 100%;
-  min-height: var(--memories-travel-desktop, 562svh);
+  min-height: var(--memories-travel-desktop, 415svh);
   overflow: clip;
-  background: #030015;
+  background: radial-gradient(ellipse at 50% 30%, #150a3c 0%, #0c0424 45%, #030014 100%);
 }
 
 .memories-viewport {
@@ -15,24 +15,15 @@
   height: 100svh;
   min-height: 30rem;
   overflow: hidden;
-  background: #020817;
+  background: radial-gradient(ellipse at 50% 30%, #150a3c 0%, #0c0424 45%, #030014 100%);
 }
 
 .memories-background {
   position: absolute;
   z-index: 0;
   inset: 0;
-  background: #020817 url("/landing-pages/memories/backgrounds/memories-background.webp") center / cover no-repeat;
   pointer-events: none;
-}
-
-.memories-background::after {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 50% 42%, rgb(18 61 128 / 18%), transparent 44%),
-    linear-gradient(180deg, rgb(1 6 18 / 66%), rgb(2 12 35 / 46%) 42%, rgb(1 5 16 / 72%));
-  content: "";
+  overflow: hidden;
 }
 
 .memories-header {
@@ -102,12 +93,17 @@
   appearance: none;
   font-family: system-ui, sans-serif;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   position: absolute;
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 0.65rem 1.4rem;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.75rem 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 999px;
   background: rgba(2, 8, 23, 0.65);
@@ -257,7 +253,7 @@
 
 @media (max-width: 767px) {
   .genesis-memories {
-    min-height: var(--memories-travel-mobile, 408svh);
+    min-height: var(--memories-travel-mobile, 324svh);
   }
 
   .memories-viewport {

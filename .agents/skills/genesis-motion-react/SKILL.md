@@ -6,7 +6,7 @@ description: Evaluate and implement optional Motion for React animations in Gene
 # Genesis Motion for React (previously Framer Motion)
 
 ## Before making changes
-- Read `ANIMATION_SYSTEM.md` and verify whether `motion` exists in `package.json`.
+- Read `docs/project/ANIMATION_SYSTEM.md` and verify whether `motion` exists in `package.json`.
 - Motion for React is **not confirmed installed** by the supplied report. If absent, explain why CSS/GSAP is insufficient before suggesting `npm install motion`.
 - Current Motion usage: `import { motion, useReducedMotion } from "motion/react"` in a client component.
 

@@ -12,6 +12,11 @@
 
 :root {
   --gdai-right-offset: 200px;
+  --genesis-motion-fast: 160ms;
+  --genesis-motion-standard: 280ms;
+  --genesis-motion-reveal: 560ms;
+  --genesis-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --genesis-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── ABOUT SECTION V3: ADAPTIVE FULL-SCREEN & REFERENCE ACCURATE ── */
@@ -196,7 +201,7 @@
   }
 
   .about-overlay-gradient {
-    width: 100vw;
+    width: 100%;
     background: linear-gradient(to bottom,
         rgba(3, 0, 21, 0.78) 0%,
         rgba(3, 0, 21, 0.92) 28%,
@@ -1461,14 +1466,16 @@ body {
 
 @media (max-width: 767px) {
   .hero-header {
-    --gdai-right-offset: 10px;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 14px;
+    padding-right: 14px;
   }
 
   .hero-gdai {
-    transform: scale(0.72);
-    transform-origin: top right;
+    left: 14px !important;
+    right: auto !important;
+    top: 10px !important;
+    transform: scale(0.68);
+    transform-origin: top left;
   }
 
   .hero-nav {
@@ -1494,14 +1501,14 @@ body {
   }
 
   .hero-controls {
-    top: 132px;
-    right: 12px;
+    top: 10px !important;
+    right: 14px !important;
     margin-top: 0;
     gap: 6px;
   }
 
   .hero-logo {
-    top: 18%;
+    top: 16%;
     width: 100%;
   }
 
@@ -1516,7 +1523,7 @@ body {
   }
 
   .hero-moon-halo {
-    width: min(100vw, 520px) !important;
+    width: min(100%, 520px) !important;
     height: min(64vw, 300px) !important;
   }
 
@@ -1527,7 +1534,7 @@ body {
   }
 
   .hero-register {
-    bottom: 34% !important;
+    bottom: clamp(37%, 39vh, 43%) !important;
   }
 
   .hero-register img {
@@ -1536,15 +1543,15 @@ body {
   }
 
   .hero-colt {
-    left: 2% !important;
-    bottom: 27% !important;
-    width: min(46vw, 220px) !important;
+    left: -2% !important;
+    bottom: 25% !important;
+    width: min(44vw, 200px) !important;
   }
 
   .hero-leon {
-    right: 2% !important;
-    bottom: 25.5% !important;
-    width: min(44vw, 210px) !important;
+    right: -2% !important;
+    bottom: 24% !important;
+    width: min(42vw, 190px) !important;
   }
 
   .hero-stage {
@@ -2184,43 +2191,86 @@ body {
   }
 }
 
-/* Sponsor cards use a scroll-linked 3D flip. */
+/* ── Genesis Sponsors Cards (Scroll-linked 3D flip & stationary hover) ── */
+.genesis-sponsors {
+  min-height: 100vh;
+  padding-top: clamp(48px, 6vw, 84px);
+  padding-bottom: clamp(140px, 16vw, 220px);
+  padding-inline: clamp(16px, 4vw, 32px);
+  box-sizing: border-box;
+}
+
+.genesis-sponsor-card,
+.genesis-sponsor-flip-card {
+  position: relative;
+  width: 100%;
+  cursor: pointer;
+  perspective: 1000px;
+}
+
+.genesis-sponsor-inner,
 .genesis-sponsor-flip-inner {
   position: relative;
   width: 100%;
   height: 100%;
+  transform: rotateY(0deg);
+  transform-style: preserve-3d;
+  transform-origin: center;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-@media (max-width: 767px),
-(min-width: 1024px) {
-  .genesis-sponsor-flip-card {
-    perspective: 1000px;
+/* Shallow entrance flip angle (55deg) ensures artwork is front-facing and visible without blank moments */
+.genesis-sponsors-flip-ready .genesis-sponsor-flip-card:not(.is-revealed) .genesis-sponsor-flip-inner {
+  transform: rotateY(55deg) scale(0.92);
+  opacity: 0.45;
+  transition: transform 550ms cubic-bezier(0.22, 1, 0.36, 1), opacity 450ms ease-out;
+}
+
+.genesis-sponsors-flip-ready .genesis-sponsor-flip-card.is-revealed .genesis-sponsor-flip-inner {
+  transform: rotateY(0deg) scale(1);
+  opacity: 1;
+  transition: transform 550ms cubic-bezier(0.22, 1, 0.36, 1), opacity 450ms ease-out;
+}
+
+/* Layer 2: Hover lift & scale on separate inner layer */
+.genesis-sponsor-hover-wrapper,
+.genesis-sponsor-artwork {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  will-change: transform;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .genesis-sponsor-flip-card:hover {
+    z-index: 20;
   }
 
-  .genesis-sponsor-flip-inner {
-    transform: rotateY(0deg);
-    transform-style: preserve-3d;
-    transform-origin: center;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-  }
-
-  .genesis-sponsors-flip-ready .genesis-sponsor-flip-inner {
-    transform: rotateY(180deg);
-    transition: transform 650ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .genesis-sponsors-flip-ready .genesis-sponsor-flip-card.is-revealed .genesis-sponsor-flip-inner {
-    transform: rotateY(0deg);
+  .genesis-sponsor-flip-card:hover .genesis-sponsor-hover-wrapper,
+  .genesis-sponsor-card:hover .genesis-sponsor-artwork {
+    transform: translateY(-8px) scale(1.08);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .genesis-sponsor-inner,
+  .genesis-sponsor-flip-inner,
+  .genesis-sponsors-flip-ready .genesis-sponsor-flip-card:not(.is-revealed) .genesis-sponsor-flip-inner,
+  .genesis-sponsors-flip-ready .genesis-sponsor-flip-card.is-revealed .genesis-sponsor-flip-inner,
+  .genesis-sponsor-hover-wrapper,
+  .genesis-sponsor-artwork {
+    transform: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+  }
 
-  .genesis-sponsors-flip-ready .genesis-sponsor-flip-inner,
-  .genesis-sponsors-flip-ready .genesis-sponsor-flip-card.is-revealed .genesis-sponsor-flip-inner {
-    transform: none;
-    transition: none;
+  @media (hover: hover) and (pointer: fine) {
+    .genesis-sponsor-flip-card:hover .genesis-sponsor-hover-wrapper,
+    .genesis-sponsor-card:hover .genesis-sponsor-artwork {
+      transform: none !important;
+    }
   }
 }
 
@@ -2302,13 +2352,14 @@ body {
   }
 
   .hero-gdai {
-    top: 0 !important;
-    right: calc(var(--mobile-header-inset) + var(--mobile-menu-width) + var(--mobile-header-gap)) !important;
+    top: var(--mobile-header-inset) !important;
+    left: var(--mobile-header-inset) !important;
+    right: auto !important;
     transform: none !important;
   }
 
   .hero-gdai img {
-    width: clamp(52px, 15vw, 64px);
+    width: clamp(48px, 14vw, 60px);
     height: auto;
   }
 
@@ -2345,7 +2396,7 @@ body {
   }
 
   .hero-logo {
-    top: clamp(14%, 18vh, 20%) !important;
+    top: clamp(13%, 16vh, 18%) !important;
   }
 
   .hero-logo img {
@@ -2354,23 +2405,24 @@ body {
   }
 
   .hero-register {
-    bottom: clamp(34%, 37vh, 41%) !important;
+    bottom: clamp(37%, 40vh, 44%) !important;
+    z-index: 28;
   }
 
   .hero-register img {
-    width: min(72vw, 205px) !important;
+    width: min(58vw, 195px) !important;
     height: auto;
   }
 
   .hero-colt {
-    left: 1% !important;
-    bottom: 27% !important;
-    width: min(48vw, 205px) !important;
+    left: -4% !important;
+    bottom: 24% !important;
+    width: min(44vw, 185px) !important;
   }
 
   .hero-leon {
-    right: 1% !important;
-    bottom: 26% !important;
-    width: min(46vw, 200px) !important;
+    right: -4% !important;
+    bottom: 23% !important;
+    width: min(42vw, 175px) !important;
   }
 }

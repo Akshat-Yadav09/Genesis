@@ -52,93 +52,90 @@ const SPONSOR_CARDS: SponsorCardData[] = [
 
 export default function SponsorsSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const revealedSponsorIdsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     const section = sectionRef.current;
     const scroller = section?.closest<HTMLElement>("main");
-
     if (!section || !scroller) return;
 
-    const cards = Array.from(
-      section.querySelectorAll<HTMLElement>(".genesis-sponsor-flip-card"),
-    );
-
-    if (!cards.length) return;
-
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const cardCenters = new Map<HTMLElement, number>();
     let frame = 0;
 
     const updateCards = () => {
+      frame = 0;
+
+      // Always mark already-revealed cards so layout switches (desktop/tablet/mobile) keep them revealed
+      revealedSponsorIdsRef.current.forEach((id) => {
+        section
+          .querySelectorAll<HTMLElement>(`[data-sponsor-id="${id}"]`)
+          .forEach((el) => {
+            if (!el.classList.contains("is-revealed")) {
+              el.classList.add("is-revealed");
+            }
+          });
+      });
+
       if (reducedMotion.matches) {
-        cards.forEach((card) => card.classList.add("is-revealed"));
+        SPONSOR_CARDS.forEach((card) => {
+          revealedSponsorIdsRef.current.add(card.id);
+          section
+            .querySelectorAll<HTMLElement>(`[data-sponsor-id="${card.id}"]`)
+            .forEach((el) => el.classList.add("is-revealed"));
+        });
         return;
       }
 
-      const activationY = scroller.scrollTop + scroller.clientHeight * 0.58;
+      // If all sponsor cards are revealed, no more checks are needed
+      if (revealedSponsorIdsRef.current.size >= SPONSOR_CARDS.length) return;
 
-      cards.forEach((card) => {
-        const center = cardCenters.get(card);
-        card.classList.toggle(
-          "is-revealed",
-          center !== undefined && activationY >= center,
-        );
-      });
-    };
-
-    const measureCards = () => {
       const scrollerRect = scroller.getBoundingClientRect();
-      cardCenters.clear();
+      const activationY = scroller.scrollTop + scroller.clientHeight * 0.68;
 
-      cards.forEach((card) => {
+      const unrevealedCards = section.querySelectorAll<HTMLElement>(
+        ".genesis-sponsor-flip-card:not(.is-revealed)",
+      );
+
+      unrevealedCards.forEach((card) => {
+        const id = card.dataset.sponsorId;
+        if (!id || revealedSponsorIdsRef.current.has(id)) return;
+
         const rect = card.getBoundingClientRect();
-        const isVisible = rect.width > 0 && rect.height > 0;
-
-        if (!isVisible) {
-          card.classList.remove("is-revealed");
-          return;
+        if (rect.width > 0 && rect.height > 0) {
+          const cardCenter =
+            scroller.scrollTop + rect.top + rect.height / 2 - scrollerRect.top;
+          if (activationY >= cardCenter) {
+            revealedSponsorIdsRef.current.add(id);
+            // Crossing activation line adds is-revealed once per card; reverse scroll never removes it
+            section
+              .querySelectorAll<HTMLElement>(`[data-sponsor-id="${id}"]`)
+              .forEach((el) => el.classList.add("is-revealed"));
+          }
         }
-
-        cardCenters.set(
-          card,
-          scroller.scrollTop + rect.top + rect.height / 2 - scrollerRect.top,
-        );
       });
-
-      updateCards();
     };
 
     const scheduleUpdate = () => {
       if (frame) return;
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        updateCards();
-      });
+      frame = window.requestAnimationFrame(updateCards);
     };
 
-    const scheduleMeasure = () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      frame = window.requestAnimationFrame(() => {
-        frame = 0;
-        measureCards();
-      });
-    };
-
+    // Activate the flip-ready class after hydration
     section.classList.add("genesis-sponsors-flip-ready");
     scroller.addEventListener("scroll", scheduleUpdate, { passive: true });
-    window.addEventListener("resize", scheduleMeasure, { passive: true });
-    reducedMotion.addEventListener("change", scheduleMeasure);
+    window.addEventListener("resize", scheduleUpdate, { passive: true });
+    reducedMotion.addEventListener("change", scheduleUpdate);
 
-    const resizeObserver = new ResizeObserver(scheduleMeasure);
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
     resizeObserver.observe(section);
-    measureCards();
+
+    // Initial check
+    updateCards();
 
     return () => {
-      section.classList.remove("genesis-sponsors-flip-ready");
-      cards.forEach((card) => card.classList.remove("is-revealed"));
       scroller.removeEventListener("scroll", scheduleUpdate);
-      window.removeEventListener("resize", scheduleMeasure);
-      reducedMotion.removeEventListener("change", scheduleMeasure);
+      window.removeEventListener("resize", scheduleUpdate);
+      reducedMotion.removeEventListener("change", scheduleUpdate);
       resizeObserver.disconnect();
       if (frame) window.cancelAnimationFrame(frame);
     };
@@ -148,13 +145,23 @@ export default function SponsorsSection() {
     sounds.playHover();
   };
 
+  const handleCardClick = () => {
+    sounds.playClick();
+  };
+
   return (
     <section
       ref={sectionRef}
       id="sponsors"
-      className="genesis-sponsors relative w-screen min-h-screen flex flex-col items-center justify-between overflow-x-hidden overflow-y-visible select-none bg-[#030015] py-4 sm:py-6 md:py-8 px-3 sm:px-6 lg:px-8"
+      className="genesis-sponsors relative w-full max-w-full min-h-screen flex flex-col items-center justify-between overflow-x-hidden overflow-y-visible select-none bg-[#030015]"
       style={{
         background: "radial-gradient(ellipse at 50% 30%, #150a3c 0%, #0c0424 45%, #030014 100%)",
+        minHeight: "100vh",
+        paddingTop: "clamp(48px, 6vw, 84px)",
+        paddingBottom: "clamp(140px, 16vw, 220px)",
+        paddingLeft: "clamp(16px, 4vw, 32px)",
+        paddingRight: "clamp(16px, 4vw, 32px)",
+        boxSizing: "border-box",
       }}
     >
       {/* ── Background Cosmic Texture ─────────────────────── */}
@@ -169,7 +176,7 @@ export default function SponsorsSection() {
           decoding="async"
         />
         {/* Soft vignette overlay */}
-        <div className="absolute inset-0 bg-radial-gradient from-transparent via-[#030015]/30 to-[#030015]/80 pointer-events-none" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(3,0,21,0.3)_60%,rgba(3,0,21,0.8)_100%)] pointer-events-none" />
         {/* Subtle Edge Transitions: Visual continuity between Prize Pool above and FAQs below */}
         <div className="absolute top-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-b from-[#030015] to-transparent pointer-events-none" />
         <div className="absolute bottom-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-t from-[#030015] to-transparent pointer-events-none" />
@@ -177,11 +184,11 @@ export default function SponsorsSection() {
 
       {/* ── Content Centering Container ───────────────────── */}
       <div className="relative z-10 w-full max-w-[1440px] flex flex-col items-center flex-grow justify-between">
-        
+
         {/* ── 1. Top SPONSORS Header ──────────────────────── */}
         <header className="relative w-full flex items-center justify-center gap-2 sm:gap-4 md:gap-5 pt-1 pb-3 sm:pb-5 md:pb-6">
           {/* Crown Left with Pop-out Animation */}
-          <div className="relative w-[44px] h-[56px] sm:w-[56px] sm:h-[72px] md:w-[68px] md:h-[86px] flex-shrink-0 animate-icon-pop-crown transition-transform duration-200 hover:scale-110 active:scale-95 cursor-default">
+          <div className="relative w-[32px] h-[42px] sm:w-[56px] sm:h-[72px] md:w-[68px] md:h-[86px] flex-shrink-0 animate-icon-pop-crown transition-transform duration-200 hover:scale-110 active:scale-95 cursor-default">
             <Image
               src="/landing-pages/sponsors/ui/header-crown.svg"
               alt="Genesis Crown"
@@ -193,7 +200,7 @@ export default function SponsorsSection() {
           </div>
 
           {/* SPONSORS Title Center (Steady, No Text Jitter) */}
-          <div className="relative w-[210px] sm:w-[270px] md:w-[327px] aspect-[327/68] flex-shrink-0">
+          <div className="relative w-[170px] sm:w-[270px] md:w-[327px] aspect-[327/68] flex-shrink-0">
             <Image
               src="/landing-pages/sponsors/ui/header-sponsors-title.svg"
               alt="SPONSORS"
@@ -205,7 +212,7 @@ export default function SponsorsSection() {
           </div>
 
           {/* Gems Box Right with Pop-out Animation */}
-          <div className="relative w-[75px] h-[60px] sm:w-[98px] sm:h-[78px] md:w-[124px] md:h-[100px] flex-shrink-0 animate-icon-pop-gems transition-transform duration-200 hover:scale-110 active:scale-95 cursor-default">
+          <div className="relative w-[52px] h-[42px] sm:w-[98px] sm:h-[78px] md:w-[124px] md:h-[100px] flex-shrink-0 animate-icon-pop-gems transition-transform duration-200 hover:scale-110 active:scale-95 cursor-default">
             <Image
               src="/landing-pages/sponsors/ui/header-gems.svg"
               alt="Gems and Credits Box"
@@ -217,66 +224,11 @@ export default function SponsorsSection() {
           </div>
         </header>
 
-        {/* ── 2. Main Sponsors Stage (Desktop Side-by-Side / Mobile Stack) ── */}
-        <div className="w-full flex flex-col lg:flex-row items-center lg:items-start justify-center gap-6 xl:gap-10 pb-6 sm:pb-8 flex-grow">
-          
-          {/* ── Left Column: PAST SPONSORS Panel ─────────── */}
-          <div className="relative w-full max-w-[310px] sm:max-w-[340px] md:max-w-[360px] lg:max-w-[380px] xl:max-w-[430px] aspect-[454/682] flex-shrink-0 flex items-center justify-center">
-            {/* Outer Blue Arcade Cabinet Frame */}
-            <div className="absolute inset-0 pointer-events-none z-1">
-              <Image
-                src="/landing-pages/sponsors/ui/past-sponsors-outer-frame.svg"
-                alt="Past Sponsors Cabinet Frame"
-                fill
-                className="object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.7)]"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
+        {/* ── 2. Main Sponsors Stage (Centered Normal Sponsors Board) ── */}
+        <div className="w-full flex flex-col items-center justify-center pb-6 sm:pb-8 flex-grow">
 
-            {/* Inner Border & (i) Info Badge */}
-            <div className="absolute inset-[3.5%] pointer-events-none z-2">
-              <Image
-                src="/landing-pages/sponsors/ui/past-sponsors-inner-border.svg"
-                alt="Past Sponsors Border"
-                fill
-                className="object-contain"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-
-            {/* Logos: GameCloud & GameDoora with Natural Border Glow */}
-            <div className="relative z-3 w-[82%] flex flex-col items-center gap-5 sm:gap-7 md:gap-8 pt-[24%]">
-              {/* GameCloud: Enhanced Cool Cyan Permanent Glow + Restrained Hover */}
-              <div className="relative w-full max-w-[330px] aspect-[370/167] sponsor-glow-gamecloud">
-                <Image
-                  src="/landing-pages/sponsors/logos/sponsor-logo-gamecloud.svg"
-                  alt="GameCloud Technologies Private Limited"
-                  fill
-                  className="object-contain"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-
-              {/* GameDoora: Enhanced Warm Amber Permanent Glow + Restrained Hover */}
-              <div className="relative w-full max-w-[320px] aspect-[355/154] sponsor-glow-gamedoora">
-                <Image
-                  src="/landing-pages/sponsors/logos/sponsor-logo-gamedoora.svg"
-                  alt="GameDoora"
-                  fill
-                  className="object-contain"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* ── Right Column: CURRENT SPONSOR CARDS ──────── */}
-          {/* DESKTOP & TABLET: Console Frame with 3-col × 2-row Grid */}
-          <div className="hidden lg:flex relative w-full max-w-[760px] xl:max-w-[890px] aspect-[947/404] flex-shrink-0 flex-col items-center justify-center self-center lg:mt-16 xl:mt-24">
+          {/* DESKTOP & LAPTOP: Console Frame with 3-col × 2-row Grid */}
+          <div className="hidden lg:flex relative w-full max-w-[880px] xl:max-w-[1000px] aspect-[947/404] flex-shrink-0 flex-col items-center justify-center my-auto">
             {/* Console Frame with "SPONSORS" subheader tab */}
             <div className="absolute inset-0 pointer-events-none z-1">
               <Image
@@ -294,12 +246,13 @@ export default function SponsorsSection() {
               {SPONSOR_CARDS.map((card) => (
                 <div
                   key={card.id}
+                  data-sponsor-id={card.id}
                   onMouseEnter={handleCardHover}
-                  className="genesis-sponsor-flip-card relative w-full h-full flex items-center justify-center cursor-pointer group"
+                  onClick={handleCardClick}
+                  className="genesis-sponsor-flip-card relative w-full h-full flex items-center justify-center cursor-pointer select-none group"
                 >
-                  <div className="genesis-sponsor-flip-inner">
-                    {/* SponsorHoverWrapper: Moves upward 5px & scales 1.04 independently */}
-                    <div className="relative w-full h-full transition-transform duration-[240ms] ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.04] group-hover:z-20">
+                  <div className="genesis-sponsor-flip-inner relative w-full h-full">
+                    <div className="genesis-sponsor-hover-wrapper relative w-full h-full">
                       <Image
                         src={card.svgPath}
                         alt={card.name}
@@ -316,19 +269,21 @@ export default function SponsorsSection() {
           </div>
 
           {/* TABLET / MID-WIDTH (md to lg): Clean 3-col or 2-col Grid */}
-          <div className="hidden md:flex lg:hidden w-full max-w-[680px] flex-col items-center">
+          <div className="hidden md:flex lg:hidden w-full max-w-[680px] flex-col items-center my-auto">
             <div className="bg-blue-950/80 border border-blue-500/40 rounded-full px-5 py-1 text-xs font-bold text-cyan-300 uppercase tracking-widest mb-4 shadow-[0_0_12px_rgba(6,182,212,0.3)]">
-              Current Sponsors
+              Sponsors
             </div>
             <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-4">
               {SPONSOR_CARDS.map((card) => (
                 <div
                   key={card.id}
+                  data-sponsor-id={card.id}
                   onMouseEnter={handleCardHover}
-                  className="genesis-sponsor-flip-card relative w-full aspect-[320/180] flex items-center justify-center cursor-pointer group"
+                  onClick={handleCardClick}
+                  className="genesis-sponsor-flip-card relative w-full aspect-[320/180] flex items-center justify-center cursor-pointer select-none group"
                 >
-                  <div className="genesis-sponsor-flip-inner">
-                    <div className="relative w-full h-full transition-transform duration-[240ms] ease-out group-hover:-translate-y-1.5 group-hover:scale-[1.04] group-hover:z-20">
+                  <div className="genesis-sponsor-flip-inner relative w-full h-full">
+                    <div className="genesis-sponsor-hover-wrapper relative w-full h-full">
                       <Image
                         src={card.svgPath}
                         alt={card.name}
@@ -347,17 +302,20 @@ export default function SponsorsSection() {
           {/* MOBILE (< 768px): Centered Vertical Sponsor Showcase */}
           <div className="md:hidden w-full flex flex-col items-center mt-3">
             <div className="bg-blue-950/80 border border-blue-500/40 rounded-full px-4 py-1 text-xs font-bold text-cyan-300 uppercase tracking-widest mb-3 shadow-[0_0_12px_rgba(6,182,212,0.3)]">
-              Current Sponsors
+              Sponsors
             </div>
 
             <div className="w-full flex flex-col items-center gap-4 sm:gap-5 px-2 py-3">
               {SPONSOR_CARDS.map((card) => (
                 <div
                   key={card.id}
-                  className="genesis-sponsor-flip-card relative w-[90%] max-w-[340px] aspect-[320/180]"
+                  data-sponsor-id={card.id}
+                  onMouseEnter={handleCardHover}
+                  onClick={handleCardClick}
+                  className="genesis-sponsor-flip-card relative w-[90%] max-w-[340px] aspect-[320/180] flex items-center justify-center cursor-pointer select-none group"
                 >
-                  <div className="genesis-sponsor-flip-inner">
-                    <div className="relative w-full h-full transition-transform duration-200 active:scale-[0.98]">
+                  <div className="genesis-sponsor-flip-inner relative w-full h-full">
+                    <div className="genesis-sponsor-hover-wrapper relative w-full h-full transition-transform duration-200 active:scale-[0.98]">
                       <Image
                         src={card.svgPath}
                         alt={card.name}
@@ -399,9 +357,10 @@ export default function SponsorsSection() {
       </div>
 
       {/* ── 3. Bottom-Right Character Decoration: Shadow Spike (Popping Out, Non-Clickable) ──────── */}
-      <div 
-        className="hidden md:block absolute bottom-3 sm:bottom-5 md:bottom-7 lg:bottom-9 right-2 sm:right-4 md:right-8 lg:right-10 w-[155px] h-[190px] sm:w-[185px] sm:h-[227px] md:w-[215px] md:h-[264px] lg:w-[245px] lg:h-[300px] pointer-events-none z-30 animate-spike-pop select-none"
+      <div
+        className="hidden md:block absolute right-2 sm:right-4 md:right-8 lg:right-10 w-[155px] h-[190px] sm:w-[185px] sm:h-[227px] md:w-[215px] md:h-[264px] lg:w-[245px] lg:h-[300px] pointer-events-none z-30 animate-spike-pop select-none"
         style={{
+          bottom: "clamp(70px, 9vw, 120px)",
           filter: "drop-shadow(0 0 22px rgba(34, 211, 238, 0.55)) drop-shadow(0 14px 28px rgba(0, 0, 0, 0.9))",
         }}
         aria-hidden="true"

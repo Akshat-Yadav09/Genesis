@@ -15,8 +15,20 @@ Use the project roles in `.codex/agents/` for changes that benefit from delegati
 1. Ask `architecture_explorer` to trace the affected routes, components, assets, and interactions. Use its findings to define acceptance criteria and assign an explicit, exclusive file list to each implementation agent.
 2. Give `frontend_engineer` ownership of UI structure, layout, semantics, and UI state. Give `motion_engineer` ownership of animation timing, scroll behavior, and lifecycle. Run them in parallel only when their file lists are disjoint. Assign shared files such as `app/page.tsx` or `app/globals.css` to one agent, or hand them off sequentially. Close completed agent threads to free slots.
 3. Integrate the implementation and start the local app. Give `browser_qa` the URL, acceptance criteria, and any visual baseline. Give `production_reviewer` the final diff, its comparison base, and the QA evidence. Recheck affected behavior after fixes.
-4. The main agent runs `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, and `npm run build`. Report actual outcomes and coverage gaps. Record material architecture decisions in `DECISIONS.md`.
+4. The main agent runs `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, and `npm run build`. Report actual outcomes and coverage gaps. Record material architecture decisions in `docs/project/DECISIONS.md`.
 
 Subagents inherit the parent session's sandbox. Run exploration, browser QA, and review in a parent launched with `codex -s read-only -a never`. Run implementation and integration in a separate parent launched with `codex -s workspace-write -a never`. Carry forward the task, owned paths, diff base, and QA findings between sessions. Start runtime tools and generate build artifacts from the writable session.
 
+Project documentation lives in `docs/project/`; reference and design exports live in `reference-assets/`. Read the relevant project guides there before implementation.
+
 Preserve Genesis branding, assets, and approved event facts. Keep changes scoped, avoid unnecessary dependencies, and keep secrets out of files and reports. Push, merge, and deploy only with explicit approval.
+
+## Frontend design skill selection
+
+Project-local skills under `.agents/skills/` supplement, but do not override, repository instructions or the Genesis-specific skills.
+
+- Use `design-taste-frontend` (Taste) for visual direction, typography, composition, and visual identity.
+- Use `ui-ux-pro-max` for design systems, responsiveness, layout, and usability.
+- Use `impeccable` for design critique, accessibility, consistency, and final polish.
+- Keep `genesis-ui-engineering`, `genesis-accessibility-ux`, the Genesis motion skills, and `genesis-production-review` authoritative for project facts, architecture, animation ownership, and release gates. Do not invoke overlapping general skills when a narrower Genesis skill already answers the task.
+- Do not enable Taste or Impeccable hooks, Impeccable live mode, or commands that bypass approvals or sandboxing. Treat their scripts and datasets as optional local tools; review a command before running it and never allow it to install dependencies or modify unrelated files.

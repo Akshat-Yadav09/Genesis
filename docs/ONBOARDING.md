@@ -19,7 +19,7 @@ and FAQs.
 | Styling | Tailwind CSS `4` through the Turbopack loader, plus `app/globals.css` |
 | Animation/audio | CSS keyframes, DOM/CSS-variable animation, Web Audio API |
 | Data/backend | No database or external API is currently wired into the live page |
-| Static content | Images/SVGs/PDFs under `public/` and `required files/` |
+| Static content | Images/SVGs/PDFs under `public/` and `reference-assets/` |
 | Main route | `/` from `app/page.tsx` |
 | Brochure route | `/brochure` from `app/brochure/route.ts` |
 
@@ -75,12 +75,12 @@ genesis/
 │   ├── prize-pool/                         # Prize backgrounds and brawler assets
 │   ├── sponsors/                           # Sponsor artwork and SVG navigation
 │   └── timeline/                           # Timeline stage artwork
-├── required files/                         # Source/reference files, including brochure PDF
+├── reference-assets/                         # Source/reference files, including brochure PDF
 │   ├── GENESIS_6_BROCHURE_.pdf
-│   ├── ABout/
+│   ├── about/
 │   ├── FAQ/
-│   ├── prize pool/
-│   ├── sponser/
+│   ├── prize-pool/
+│   ├── sponsors/
 │   └── timeline/
 ├── next.config.ts                          # Next/Turbopack, dev origins, no-cache headers
 ├── package.json                            # Scripts and dependencies
@@ -131,7 +131,7 @@ flowchart TD
 
   Browser --> Brochure[/brochure]
   Brochure --> Route[app/brochure/route.ts]
-  Route --> PDF[required files/GENESIS_6_BROCHURE_.pdf]
+  Route --> PDF[reference-assets/GENESIS_6_BROCHURE_.pdf]
   Route -. optional mirror .-> PublicPDF[public/GENESIS_6_BROCHURE_.pdf]
 ```
 
@@ -283,7 +283,7 @@ Remember that `public` itself is not part of the URL.
 ### Tour 7: Follow the brochure path
 
 Open [`app/brochure/route.ts`](../app/brochure/route.ts) and compare it with
-`required files/GENESIS_6_BROCHURE_.pdf`. Test `/brochure` separately from the home page.
+`reference-assets/GENESIS_6_BROCHURE_.pdf`. Test `/brochure` separately from the home page.
 
 ## 9. Complexity hotspots
 

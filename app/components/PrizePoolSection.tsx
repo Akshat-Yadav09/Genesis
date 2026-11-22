@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect, useState, useCallback } from "react";
+import CloudDivider from "./CloudDivider";
 import { sounds } from "./sound";
 
 export default function PrizePoolSection() {
@@ -46,7 +47,7 @@ export default function PrizePoolSection() {
     <section
       id="prizepool"
       ref={sectionRef}
-      className="relative w-full min-h-screen h-auto md:h-screen flex flex-col items-center justify-center overflow-visible md:overflow-hidden select-none bg-[#030015] shrink-0 text-white"
+      className="relative w-full min-h-screen h-auto md:h-screen flex flex-col items-center justify-center overflow-x-clip overflow-y-visible select-none bg-[#030015] shrink-0 text-white"
     >
       {/* ── 1. COSMIC BRAWL STARS BACKGROUND LAYERS ──────── */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
@@ -71,6 +72,8 @@ export default function PrizePoolSection() {
         <div className="absolute top-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-b from-[#030015] to-transparent pointer-events-none" />
         <div className="absolute bottom-0 inset-x-0 h-24 sm:h-32 bg-gradient-to-t from-[#030015] to-transparent pointer-events-none" />
       </div>
+
+      <CloudDivider align="inset" shiftY="clamp(-75px, -5.2vw, -35px)" />
 
       {/* ── 2. DESKTOP / LAPTOP / TABLET STAGE (md: >= 768px) ──────── */}
       <div className="hidden md:flex relative z-10 w-full h-full items-center justify-center">
