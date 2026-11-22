@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type RefObject } from "react";
 import CloudDivider from "./CloudDivider";
+import { sounds } from "./sound";
 import { createTimelineParticles } from "./timelineParticles";
 
 const stages = [
@@ -10,6 +11,8 @@ const stages = [
     title: "Registration",
     sub: "Unstop & IndieConnect",
     asset: "/landing-pages/timeline/stages/stage-registration.svg",
+    backAsset: "/landing-pages/timeline/stages/stage-registration-back.webp",
+    backFallback: "/landing-pages/timeline/stages/stage-registration-back.png",
     side: "left",
     details: ["Platforms: Unstop & IndieConnect", "Opening date: To be announced", "Closing date: To be announced"],
   },
@@ -18,6 +21,8 @@ const stages = [
     title: "Round 1 — Online",
     sub: "Online Tournament",
     asset: "/landing-pages/timeline/stages/stage-round1.svg",
+    backAsset: "/landing-pages/timeline/stages/stage-round1-back.webp",
+    backFallback: "/landing-pages/timeline/stages/stage-round1-back.png",
     side: "right",
     details: ["Format: Online", "Start date: To be announced", "End date: To be announced"],
   },
@@ -26,6 +31,8 @@ const stages = [
     title: "Round 2 — Offline",
     sub: "Offline Showdown",
     asset: "/landing-pages/timeline/stages/stage-round2.svg",
+    backAsset: "/landing-pages/timeline/stages/stage-round2-back.webp",
+    backFallback: "/landing-pages/timeline/stages/stage-round2-back.png",
     side: "left",
     details: ["Format: Offline", "Dates: To be announced", "Venue: To be announced"],
   },
@@ -34,6 +41,8 @@ const stages = [
     title: "Results",
     sub: "Grand Champions",
     asset: "/landing-pages/timeline/stages/stage-result.svg",
+    backAsset: "/landing-pages/timeline/stages/stage-result-back.webp",
+    backFallback: "/landing-pages/timeline/stages/stage-result-back.png",
     side: "right",
     details: ["Announcement date: To be announced", "Additional details: To be announced"],
   },
@@ -173,6 +182,19 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
     };
   }, [scrollContainerRef]);
 
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    sounds.playClick();
+    e.currentTarget.classList.toggle("is-user-flipped");
+  };
+
+  const handleCardKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      sounds.playClick();
+      e.currentTarget.classList.toggle("is-user-flipped");
+    }
+  };
+
   return (
     <section ref={sectionRef} id="timeline" className="genesis-timeline relative w-full overflow-x-clip overflow-y-visible bg-[#030015] text-white" aria-labelledby="timeline-heading">
       <div className="absolute inset-0 pointer-events-none">
@@ -199,18 +221,43 @@ export default function TimelineSection({ scrollContainerRef }: TimelineSectionP
         <div className="genesis-timeline-stages">
           {stages.map((stage) => (
             <article key={stage.step} className={`genesis-timeline-stage genesis-timeline-stage-${stage.side}`}>
-              <div className="genesis-timeline-card">
+              <div
+                className="genesis-timeline-card"
+                role="button"
+                tabIndex={0}
+                aria-label={`Stage ${stage.step}: ${stage.title} flash card. Click to flip.`}
+                onClick={handleCardClick}
+                onKeyDown={handleCardKeyDown}
+              >
                 <div className="genesis-timeline-card-inner">
-                  <div className="genesis-timeline-card-back">
-                    <span className="genesis-timeline-card-step">STAGE {stage.step}</span>
-                    <h3>{stage.title}</h3>
-                    <p className="genesis-timeline-card-subtitle">{stage.sub}</p>
-                    <div className="genesis-timeline-card-details">
-                      {stage.details.map((detail) => <p key={detail}>{detail}</p>)}
-                    </div>
-                  </div>
                   <div className="genesis-timeline-card-front">
-                    <img loading="lazy" decoding="async" src={stage.asset} alt="" draggable={false} />
+                    <img
+                      loading="lazy"
+                      decoding="async"
+                      src={stage.asset}
+                      alt={`${stage.title} Stage Card`}
+                      draggable={false}
+                    />
+                  </div>
+                  <div className="genesis-timeline-card-back">
+                    <picture>
+                      <source srcSet={stage.backAsset} type="image/webp" />
+                      <img
+                        loading="lazy"
+                        decoding="async"
+                        src={stage.backFallback}
+                        alt={`Stage ${stage.step}: ${stage.title} Details`}
+                        draggable={false}
+                      />
+                    </picture>
+                    <div className="sr-only">
+                      <span className="genesis-timeline-card-step">STAGE {stage.step}</span>
+                      <h3>{stage.title}</h3>
+                      <p className="genesis-timeline-card-subtitle">{stage.sub}</p>
+                      <div className="genesis-timeline-card-details">
+                        {stage.details.map((detail) => <p key={detail}>{detail}</p>)}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
