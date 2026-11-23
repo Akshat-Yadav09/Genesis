@@ -112,7 +112,11 @@ export default function MemoriesSection({ scrollContainerRef }: MemoriesSectionP
 
   const [activeMemory, setActiveMemory] = useState<MemoryItem | null>(null);
   const [tileDimensions, setTileDimensions] = useState<{ w: number; h: number }>({ w: 260, h: 180 });
-  const [isReducedMotion, setIsReducedMotion] = useState(false);
+  const [isReducedMotion] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+  );
 
   // Lightbox handlers with scroll locking on scrollContainerRef
   const openLightbox = useCallback((item: MemoryItem) => {
@@ -145,9 +149,10 @@ export default function MemoriesSection({ scrollContainerRef }: MemoriesSectionP
 
   // Clean up scroll lock on unmount
   useEffect(() => {
+    const scroller = scrollContainerRef.current;
     return () => {
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.style.overflow = "auto";
+      if (scroller) {
+        scroller.style.overflow = "auto";
       }
     };
   }, [scrollContainerRef]);
@@ -157,12 +162,7 @@ export default function MemoriesSection({ scrollContainerRef }: MemoriesSectionP
     const scroller = scrollContainerRef.current;
     if (!scroller || !sectionRef.current) return;
 
-    // Check reduced motion
-    const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reducedMotionQuery.matches) {
-      setIsReducedMotion(true);
-      return;
-    }
+    if (isReducedMotion) return;
 
     const ctx = gsap.context(() => {
       const buildAnimation = () => {
@@ -303,7 +303,7 @@ export default function MemoriesSection({ scrollContainerRef }: MemoriesSectionP
     return () => {
       ctx.revert();
     };
-  }, [scrollContainerRef]);
+  }, [scrollContainerRef, isReducedMotion]);
 
   return (
     <section
