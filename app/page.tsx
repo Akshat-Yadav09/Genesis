@@ -11,6 +11,7 @@ import MemoriesSection from "./components/MemoriesSection";
 import SponsorsSection from "./components/SponsorsSection";
 import FAQSection from "./components/FAQSection";
 import ContactSection from "./components/ContactSection";
+import LoadingScreen from "./components/LoadingScreen";
 
 // Deterministic twinkling stars with individual drift offsets
 const STARS = Array.from({ length: 90 }, (_, i) => ({
@@ -25,6 +26,7 @@ const STARS = Array.from({ length: 90 }, (_, i) => ({
 }));
 
 export default function Home() {
+  const [isSiteLoading, setIsSiteLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileViewport, setIsMobileViewport] = useState<boolean | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -262,13 +264,20 @@ export default function Home() {
   return (
     <main
       ref={containerRef}
-      className="relative w-full max-w-full h-screen overflow-y-auto overflow-x-hidden select-none bg-[#030015]"
+      className={`relative w-full max-w-full h-screen ${
+        isSiteLoading ? "overflow-hidden" : "overflow-y-auto"
+      } overflow-x-hidden select-none bg-[#030015]`}
       style={{
         overflowX: "clip",
         ["--mx" as string]: 0,
         ["--my" as string]: 0,
       }}
     >
+      {/* ── Initial Loading Page & Entrance Transition ────────── */}
+      {isSiteLoading && (
+        <LoadingScreen onComplete={() => setIsSiteLoading(false)} />
+      )}
+
       {/* ── SECTION 1: HERO VIEWPORT (FULL SCREEN 100VH) ───── */}
       <section 
         id="hero"
