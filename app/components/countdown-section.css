@@ -91,8 +91,8 @@
 }
 
 /* Reserve room inside About while its original background remains visible. */
-.genesis-power + .about-section {
-  padding-top: clamp(220px, 16vw, 246px);
+.genesis-power + .genesis-junction > .genesis-about-flow > .about-section {
+  padding-top: clamp(224px, 16vw, 246px);
 }
 
 @keyframes genesis-power-segment-breathe {
@@ -111,7 +111,7 @@
     --genesis-power-panel-width: min(94vw, 390px);
   }
 
-  .genesis-power + .about-section {
+  .genesis-power + .genesis-junction > .genesis-about-flow > .about-section {
     padding-top: clamp(158px, 45vw, 195px);
   }
 

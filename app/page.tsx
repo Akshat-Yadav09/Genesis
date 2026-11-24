@@ -830,67 +830,81 @@ export default function Home() {
 
         {/* ── CHARACTERS ROW (STANDING BEHIND THE CURVED WALL) ── */}
 
-        {/* 1. Left Character: COLT (Dual Gunslinger - Subtle Idle Float & Blaster Recoil) */}
-        <div 
-          onClick={handleColtClick}
-          className={`hero-colt absolute z-18 transition-transform duration-300 hover:scale-105 group gpu-accel cursor-pointer ${
-            coltRecoil ? "-translate-y-2 scale-105" : ""
-          }`}
-          style={{
-            bottom: "31.8%",
-            left: "14%",
-            width: "clamp(250px, 26vw, 380px)",
-            height: "auto",
-            animation: !coltRecoil ? "float-gentle 4.5s ease-in-out infinite" : undefined,
-          }}
-          title="Colt Gunslinger - Click to Fire Blasters!"
-        >
-          <div className="relative">
-            <Image
-              src="/landing-pages/home/characters/dual-wielding-neon-gunslinger-1.webp"
-              alt="Colt Gunslinger"
-              width={370}
-              height={290}
-              className="w-full h-auto object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,0.75)] filter group-hover:brightness-110 transition-all"
-            />
-            {coltRecoil && (
-              <div 
-                className="absolute top-[38%] left-[78%] w-10 h-10 rounded-full bg-cyan-300 blur-sm animate-ping pointer-events-none"
-                style={{ boxShadow: "0 0 20px 8px rgba(56, 189, 248, 0.9)" }}
-              />
-            )}
+        <div className="hero-character-anchor absolute inset-0 z-18 pointer-events-none">
+          {/* 1. Left Character: COLT (Dual Gunslinger - Subtle Idle Float & Blaster Recoil) */}
+          <div
+            className="hero-colt absolute"
+            style={{
+              bottom: "31.8%",
+              left: "14%",
+              width: "clamp(250px, 26vw, 380px)",
+              height: "auto",
+            }}
+          >
+            <div
+              className="hero-character-float"
+              style={{ animation: !coltRecoil ? "float-gentle 4.5s ease-in-out infinite" : undefined }}
+            >
+              <div
+                onClick={handleColtClick}
+                className={`relative transition-transform duration-300 hover:scale-105 group gpu-accel cursor-pointer pointer-events-auto ${
+                  coltRecoil ? "-translate-y-2 scale-105" : ""
+                }`}
+                title="Colt Gunslinger - Click to Fire Blasters!"
+              >
+                <Image
+                  src="/landing-pages/home/characters/dual-wielding-neon-gunslinger-1.webp"
+                  alt="Colt Gunslinger"
+                  width={370}
+                  height={290}
+                  className="w-full h-auto object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,0.75)] filter group-hover:brightness-110 transition-all"
+                />
+                {coltRecoil && (
+                  <div
+                    className="absolute top-[38%] left-[78%] w-10 h-10 rounded-full bg-cyan-300 blur-sm animate-ping pointer-events-none"
+                    style={{ boxShadow: "0 0 20px 8px rgba(56, 189, 248, 0.9)" }}
+                  />
+                )}
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* 2. Right Character: LEON (Chameleon Ninja Brawler - Subtle Idle Float & Shuriken Spin) */}
-        <div 
-          onClick={handleLeonClick}
-          className={`hero-leon absolute z-18 transition-transform duration-300 hover:scale-105 group gpu-accel cursor-pointer ${
-            leonActive ? "-translate-y-2 scale-105" : ""
-          }`}
-          style={{
-            bottom: "28.5%",
-            right: "12%",
-            width: "clamp(240px, 24vw, 360px)",
-            height: "auto",
-            animation: !leonActive ? "float-gentle 4s 1s ease-in-out infinite" : undefined,
-          }}
-          title="Leon Brawler - Click to Throw Ninja Star!"
-        >
-          <div className="relative">
-            <Image
-              src="/landing-pages/home/characters/chameleon-hood-ninja-brawler-1.webp"
-              alt="Leon Brawler"
-              width={360}
-              height={330}
-              className="w-full h-auto object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,0.75)] filter group-hover:brightness-110 transition-all"
-            />
-            {leonActive && (
-              <div 
-                className="absolute top-[42%] left-[12%] w-8 h-8 rounded-full bg-purple-300 blur-sm animate-spin pointer-events-none"
-                style={{ boxShadow: "0 0 16px 6px rgba(168, 85, 247, 0.9)" }}
-              />
-            )}
+          {/* 2. Right Character: LEON (Chameleon Ninja Brawler - Subtle Idle Float & Shuriken Spin) */}
+          <div
+            className="hero-leon absolute"
+            style={{
+              bottom: "28.5%",
+              right: "12%",
+              width: "clamp(240px, 24vw, 360px)",
+              height: "auto",
+            }}
+          >
+            <div
+              className="hero-character-float"
+              style={{ animation: !leonActive ? "float-gentle 4s 1s ease-in-out infinite" : undefined }}
+            >
+              <div
+                onClick={handleLeonClick}
+                className={`relative transition-transform duration-300 hover:scale-105 group gpu-accel cursor-pointer pointer-events-auto ${
+                  leonActive ? "-translate-y-2 scale-105" : ""
+                }`}
+                title="Leon Brawler - Click to Throw Ninja Star!"
+              >
+                <Image
+                  src="/landing-pages/home/characters/chameleon-hood-ninja-brawler-1.webp"
+                  alt="Leon Brawler"
+                  width={360}
+                  height={330}
+                  className="w-full h-auto object-contain drop-shadow-[0_10px_22px_rgba(0,0,0,0.75)] filter group-hover:brightness-110 transition-all"
+                />
+                {leonActive && (
+                  <div
+                    className="absolute top-[42%] left-[12%] w-8 h-8 rounded-full bg-purple-300 blur-sm animate-spin pointer-events-none"
+                    style={{ boxShadow: "0 0 16px 6px rgba(168, 85, 247, 0.9)" }}
+                  />
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
